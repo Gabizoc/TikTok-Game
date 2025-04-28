@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
 
@@ -10,7 +11,8 @@ const SALES_CHANNEL_DATA = [
 	{ name: "Social Media", value: 18700 },
 ];
 
-const SalesChannelChart = () => {
+const ViewerChart = () => {
+	const { t } = useTranslation();
 	return (
 		<motion.div
 			className='bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 lg:col-span-2 border border-gray-700'
@@ -18,7 +20,7 @@ const SalesChannelChart = () => {
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.4 }}
 		>
-			<h2 className='text-lg font-medium mb-4 text-gray-100'>Sales by Channel</h2>
+			<h2 className='text-lg font-medium mb-4 text-gray-100'>{t('Viewers Repartition')} </h2>
 
 			<div className='h-80'>
 				<ResponsiveContainer>
@@ -45,4 +47,4 @@ const SalesChannelChart = () => {
 		</motion.div>
 	);
 };
-export default SalesChannelChart;
+export default ViewerChart;

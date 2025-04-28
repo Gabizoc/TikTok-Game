@@ -10,12 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "caniuse-lite": "^1.0.30001715",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "framer-motion": "^11.3.19",
+    "i18next": "^25.0.1",
     "lucide-react": "^0.417.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^15.5.1",
     "react-router-dom": "^6.25.1",
-    "recharts": "^2.12.7"
+    "react-world-flags": "^1.6.0",
+    "recharts": "^2.12.7",
+    "tiktok-live-connector": "^1.2.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

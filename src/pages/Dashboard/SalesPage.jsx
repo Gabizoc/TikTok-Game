@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 
-import Header from "../components/common/Header";
-import StatCard from "../components/common/StatCard";
+import Header from "../../components/common/Header";
+import StatCard from "../../components/common/StatCard";
 import { CreditCard, DollarSign, ShoppingCart, TrendingUp } from "lucide-react";
-import SalesOverviewChart from "../components/sales/SalesOverviewChart";
-import SalesByCategoryChart from "../components/sales/SalesByCategoryChart";
-import DailySalesTrend from "../components/sales/DailySalesTrend";
+import SalesOverviewChart from "../../components/sales/SalesOverviewChart";
+import SalesByCategoryChart from "../../components/sales/SalesByCategoryChart";
+import DailySalesTrend from "../../components/sales/DailySalesTrend";
 
 const salesStats = {
 	totalRevenue: "$1,234,567",
@@ -16,7 +16,7 @@ const salesStats = {
 
 const SalesPage = () => {
 	return (
-		<div className='flex-1 overflow-auto relative z-10'>
+		<div className='flex-1 overflow-auto relative'>
 			<Header title='Sales Dashboard' />
 
 			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>

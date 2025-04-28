@@ -1,19 +1,20 @@
 import { motion } from "framer-motion";
 
-import Header from "../components/common/Header";
-import StatCard from "../components/common/StatCard";
+import Header from "../../components/common/Header";
+import StatCard from "../../components/common/StatCard";
 
 import { AlertTriangle, DollarSign, Package, TrendingUp } from "lucide-react";
-import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import SalesTrendChart from "../components/products/SalesTrendChart";
-import ProductsTable from "../components/products/ProductsTable";
+import CategoryDistributionChart from "../../components/overview/GiftRepartitionChart";
+import SalesTrendChart from "../../components/products/SalesTrendChart";
+import ProductsTable from "../../components/products/ProductsTable";
 
 const ProductsPage = () => {
 	return (
-		<div className='flex-1 overflow-auto relative z-10'>
-			<Header title='Products' />
+		<div className='flex-1 overflow-auto relative'>
+			<Header title='Gifts' />
 
 			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
+				
 				{/* STATS */}
 				<motion.div
 					className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8'
@@ -27,13 +28,14 @@ const ProductsPage = () => {
 					<StatCard name='Total Revenue' icon={DollarSign} value={"$543,210"} color='#EF4444' />
 				</motion.div>
 
-				<ProductsTable />
-
 				{/* CHARTS */}
-				<div className='grid grid-col-1 lg:grid-cols-2 gap-8'>
+				<div className='grid grid-col-1 lg:grid-cols-2 gap-8 mb-8'>
 					<SalesTrendChart />
 					<CategoryDistributionChart />
 				</div>
+
+				<ProductsTable />
+
 			</main>
 		</div>
 	);
