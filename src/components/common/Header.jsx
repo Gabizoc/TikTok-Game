@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { ChevronUp } from "lucide-react";
 import React, { useState } from "react";
 import Flag from "react-world-flags"; // Importer react-world-flags
 import { motion } from "framer-motion"; // Importer framer-motion pour les animations
@@ -25,6 +26,13 @@ const Header = ({ title }) => {
           >
             <Flag code={i18n.language === "fr" ? "FR" : "US"} alt="language flag" style={{ width: "20px", height: "auto" }} />
             <span>{i18n.language === "fr" ? "Français" : "English"}</span>
+            <motion.div
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="ml-auto"
+            >
+              <ChevronUp size={16} />
+            </motion.div>
           </button>
           {isOpen && (
             <motion.div
