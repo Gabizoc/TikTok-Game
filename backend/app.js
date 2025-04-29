@@ -38,12 +38,11 @@ app.listen(port, async () => {
 
 
 process.on('SIGINT', async () => {
-  console.log('Shutting down server...');
-  
-  const tiktokLiveRoutes = require('./routes/tiktokLive');
+  const chalk = await import('chalk').then(mod => mod.default);
+  console.log(chalk.red('[Exit] Shutting down server...'));
   
   await mongoose.connection.close();
-  console.log('MongoDB connection closed');
+  console.log(chalk.red('[Exit] MongoDB connection closed'));
   
   process.exit(0);
 });

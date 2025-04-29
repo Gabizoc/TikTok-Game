@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const salesData = [
 	{ month: "Jan", sales: 4000 },
@@ -11,6 +12,7 @@ const salesData = [
 ];
 
 const SalesTrendChart = () => {
+	const { t } = useTranslation();
 	return (
 		<motion.div
 			className='bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700'
@@ -18,7 +20,7 @@ const SalesTrendChart = () => {
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.3 }}
 		>
-			<h2 className='text-xl font-semibold text-gray-100 mb-4'>Sales Trend</h2>
+			<h2 className='text-xl font-semibold text-gray-100 mb-4'>{t('Number of Gifts')}</h2>
 			<div style={{ width: "100%", height: 300 }}>
 				<ResponsiveContainer>
 					<LineChart data={salesData}>
@@ -33,7 +35,7 @@ const SalesTrendChart = () => {
 							itemStyle={{ color: "#E5E7EB" }}
 						/>
 						<Legend />
-						<Line type='monotone' dataKey='sales' stroke='#8B5CF6' strokeWidth={2} />
+						<Line type='monotone' dataKey={t('Number of Gifts')} stroke='#8B5CF6' strokeWidth={2} />
 					</LineChart>
 				</ResponsiveContainer>
 			</div>

@@ -1,37 +1,23 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import en from "./language/en.json";
+import fr from "./language/fr.json";
 
 i18n
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources: {
-      en: {
-        translation: {
-          "Dashboard": "Dashboard",
-          "Total Spectateurs": "Total Viewers",
-          "Total Stream": "Total Streams",
-          "Total Gain": "Total Gains",
-          "Total Viewers": "Total Viewers",
-          "Gain Overview": "Gain Overview",
-          "Gifts Repartition": "Gifts Repartition",
-          "Viewers Repartition": "Viewers Repartition",
-        },
-      },
-      fr: {
-        translation: {
-          "Dashboard": "Tableau de bord",
-          "Total Gain": "Total des Gains",
-          "Total Viewers": "Total des Spectateurs",
-          "Total Spectateurs": "Total des Spectateurs",
-          "Total Stream": "Total des Streams",
-          "Gain Overview": "Aperçu des Gains",
-          "Gifts Repartition": "Répartition des Cadeaux",
-          "Viewers Repartition": "Répartition des Spectateurs",
-        },
-      },
+      en: { translation: en },
+      fr: { translation: fr },
     },
-    lng: "fr",
+    supportedLngs: ["en", "fr"],
     fallbackLng: "en",
+    detection: {
+      order: ["localStorage", "cookie", "navigator"],
+      caches: ["localStorage"],
+    },
     interpolation: {
       escapeValue: false,
     },

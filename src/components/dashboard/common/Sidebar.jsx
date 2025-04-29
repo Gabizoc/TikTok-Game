@@ -1,19 +1,20 @@
-import { BarChart2, DollarSign, Menu, Settings, Gift, ShoppingCart, TrendingUp, Users } from "lucide-react";
+import { BarChart2, Gamepad2, Menu, Settings, Gift, ShoppingCart, TrendingUp, Scale } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const SIDEBAR_ITEMS = [
-	{ name: "Dashboard", icon: BarChart2, color: "#6366f1", href: "/" },
-	{ name: "Gifts", icon: Gift, color: "#8B5CF6", href: "/gifts" },
-	{ name: "Users", icon: Users, color: "#EC4899", href: "/users" },
-	{ name: "Sales", icon: DollarSign, color: "#10B981", href: "/sales" },
-	{ name: "Orders", icon: ShoppingCart, color: "#F59E0B", href: "/orders" },
-	{ name: "Analytics", icon: TrendingUp, color: "#3B82F6", href: "/analytics" },
-	{ name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
+	{ name: "Dashboard", icon: BarChart2, color: "#EC4899", href: "/" },
+	{ name: "Gifts", icon: Gift, color: "#EC4899", href: "/gifts" },
+	{ name: "License", icon: Scale, color: "#EC4899", href: "/license" },
+	{ name: "Analytics", icon: TrendingUp, color: "#EC4899", href: "/analytics" },
+	{ name: "Game", icon: Gamepad2, color: "#EC4899", href: "/game" },
+	{ name: "Settings", icon: Settings, color: "#EC4899", href: "/settings" },
 ];
 
 const Sidebar = () => {
+	const { t } = useTranslation();
 	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
 	return (

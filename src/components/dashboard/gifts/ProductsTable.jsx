@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Edit, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const PRODUCT_DATA = [
 	{ id: 1, name: "Wireless Earbuds", category: "Electronics", price: 59.99, stock: 143, sales: 1200 },
@@ -11,6 +12,7 @@ const PRODUCT_DATA = [
 ];
 
 const ProductsTable = () => {
+	const { t } = useTranslation();
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filteredProducts, setFilteredProducts] = useState(PRODUCT_DATA);
 
@@ -32,11 +34,11 @@ const ProductsTable = () => {
 			transition={{ delay: 0.2 }}
 		>
 			<div className='flex justify-between items-center mb-6'>
-				<h2 className='text-xl font-semibold text-gray-100'>Product List</h2>
+				<h2 className='text-xl font-semibold text-gray-100'>{t('Gifts Send List')}</h2>
 				<div className='relative'>
 					<input
 						type='text'
-						placeholder='Search products...'
+						placeholder='Search gifts ...'
 						className='bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
 						onChange={handleSearch}
 						value={searchTerm}

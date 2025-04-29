@@ -2,20 +2,19 @@ import { Tv, Users, Euro } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
-import Header from "../../components/common/Header";
-import StatCard from "../../components/common/StatCard";
-import GainChart from "../../components/overview/GainChart";
-import GiftRepartitionChart from "../../components/overview/GiftRepartitionChart";
-import ViewerChart from "../../components/overview/ViewerChart";
+import Header from "../../components/dashboard/common/Header";
+import StatCard from "../../components/dashboard/common/StatCard";
+import GainChart from "../../components/dashboard/dashboard/GainChart";
+import GiftRepartitionChart from "../../components/dashboard/gifts/GiftRepartitionChart";
+import ViewerChart from "../../components/dashboard/dashboard/ViewerChart";
+import AIPoweredInsights from "../../components/dashboard/analytics/AIPoweredInsights";
 
 const OverviewPage = () => {
 	const { t } = useTranslation();
 	return (
 		<div className='flex-1 overflow-auto relative'>
-			{/* Header PAS DANS LE MOTION */}
 			<Header title={t('Dashboard')} />
 
-			{/* Là seulement le contenu animé */}
 			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
 				<motion.div
 					className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8'
@@ -28,12 +27,13 @@ const OverviewPage = () => {
 					<StatCard name={t('Total Stream')} icon={Tv} value='12' color='#EC4899' />
 				</motion.div>
 
-				{/* CHARTS */}
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
 					<GainChart />
 					<GiftRepartitionChart />
 					<ViewerChart />
 				</div>
+
+				<AIPoweredInsights />
 			</main>
 		</div>
 	);

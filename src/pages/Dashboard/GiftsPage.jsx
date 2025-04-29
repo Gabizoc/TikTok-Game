@@ -1,37 +1,35 @@
 import { motion } from "framer-motion";
-import Header from "../../components/common/Header";
-import StatCard from "../../components/common/StatCard";
+import Header from "../../components/dashboard/common/Header";
+import StatCard from "../../components/dashboard/common/StatCard";
 import { useTranslation } from "react-i18next";
 
-import { AlertTriangle, DollarSign, Package, TrendingUp } from "lucide-react";
-import CategoryDistributionChart from "../../components/overview/GiftRepartitionChart";
-import SalesTrendChart from "../../components/products/SalesTrendChart";
-import ProductsTable from "../../components/products/ProductsTable";
+import { AlertTriangle, ArrowUpNarrowWide, Package, Coins } from "lucide-react";
+import GiftRepartitionChart from "../../components/dashboard/gifts/GiftRepartitionChart";
+import GiftsChart from "../../components/dashboard/gifts/GiftsChart";
+import ProductsTable from "../../components/dashboard/gifts/ProductsTable";
 
 const ProductsPage = () => {
 	const { t } = useTranslation();
 	return (
 		<div className='flex-1 overflow-auto relative'>
-			<Header title='Gifts' />
+			<Header title={t('Gifts')} />
 
 			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
 				
-				{/* STATS */}
 				<motion.div
 					className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8'
-					initial={{ opacity: 0, y: 20 }}
+					initial={{ opacity: 0, y: 20 }}cpi
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 1 }}
 				>
-					<StatCard name={t('Total Gifts')} icon={Package} value={1234} color='#6366F1' />
-					<StatCard name={t('Top Gifts')} icon={TrendingUp} value="Rosa" color='#10B981' />
-					<StatCard name={t('Total Coins')} icon={AlertTriangle} value={23} color='#F59E0B' />
+					<StatCard name={t('Total Gifts')} icon={Package} value={1234} color='#EC4899' />
+					<StatCard name={t('Top Gifts')} icon={ArrowUpNarrowWide} value="Rosa" color='#EC4899' />
+					<StatCard name={t('Total Coins')} icon={Coins} value={23} color='#EC4899' />
 				</motion.div>
 
-				{/* CHARTS */}
 				<div className='grid grid-col-1 lg:grid-cols-2 gap-8 mb-8'>
-					<SalesTrendChart />
-					<CategoryDistributionChart />
+					<GiftsChart />
+					<GiftRepartitionChart />
 				</div>
 
 				<ProductsTable />

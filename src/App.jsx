@@ -1,14 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 
-import Sidebar from "./components/common/Sidebar";
+import Sidebar from "./components/dashboard/common/Sidebar";
 
-import OverviewPage from "./pages/Dashboard/DashboardPage";
-import ProductsPage from "./pages/Dashboard/GiftsPage";
-import UsersPage from "./pages/Dashboard/UsersPage";
-import SalesPage from "./pages/Dashboard/SalesPage";
-import OrdersPage from "./pages/Dashboard/OrdersPage";
-import AnalyticsPage from "./pages/Dashboard/AnalyticsPage";
-import SettingsPage from "./pages/Dashboard/SettingsPage";
+import OverviewPage from "./pages/dashboard/DashboardPage";
+import ProductsPage from "./pages/dashboard/GiftsPage";
+import LicencePage from "./pages/dashboard/LicencePage";
+import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
+import SettingsPage from "./pages/dashboard/SettingsPage";
+import GamePage from "./pages/dashboard/GamePage";
 import "./i18n";
 
 function App() {
@@ -24,11 +23,10 @@ function App() {
 			<Routes>
 				<Route path='/' element={<OverviewPage />} />
 				<Route path='/gifts' element={<ProductsPage />} />
-				<Route path='/users' element={<UsersPage />} />
-				<Route path='/sales' element={<SalesPage />} />
-				<Route path='/orders' element={<OrdersPage />} />
+				<Route path='/license' element={<LicencePage />} />
 				<Route path='/analytics' element={<AnalyticsPage />} />
 				<Route path='/settings' element={<SettingsPage />} />
+				<Route path='/game' element={<GamePage />} />
 			</Routes>
 		</div>
 	);
