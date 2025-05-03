@@ -2,7 +2,9 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { User, Bell, Trash2, Save } from "lucide-react";
+
 import Header from "../../components/dashboard/common/Header";
+import Footer from "../../components/dashboard/common/Footer";
 
 const SettingsPage = () => {
 	const { t } = useTranslation();
@@ -30,7 +32,7 @@ const SettingsPage = () => {
 					</div>
 
 					<div className="flex flex-col sm:flex-row items-center mb-6">
-						<div className="w-20 h-20 rounded-full border-2 border-pink-500 text-pink-500 flex items-center justify-center font-semibold text-3xl mr-4 p-10">
+						<div className="w-20 h-20 rounded-full border-2 border-pink-500 text-pink-500 flex items-center justify-center font-semibold text-3xl mr-4 mb-4 mt-4 p-10">
 							LI
 						</div>
 
@@ -128,6 +130,7 @@ const SettingsPage = () => {
 					</button>
 				</motion.div>
 			</main>
+
 		</div>
 	);
 };

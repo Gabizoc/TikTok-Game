@@ -1,4 +1,5 @@
 import Header from "../../components/dashboard/common/Header";
+import Footer from "../../components/dashboard/common/Footer";
 
 import OverviewCards from "../../components/dashboard/analytics/OverviewCards";
 import RevenueChart from "../../components/dashboard/analytics/RevenueChart";
@@ -10,7 +11,7 @@ import AIPoweredInsights from "../../components/dashboard/analytics/AIPoweredIns
 
 const AnalyticsPage = () => {
 	return (
-		<div className='flex-1 overflow-auto relative bg-gray-900'>
+		<div className='flex-1 overflow-auto relative'>
 			<Header title={"Analytics Dashboard"} />
 
 			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
@@ -26,6 +27,8 @@ const AnalyticsPage = () => {
 
 				<AIPoweredInsights />
 			</main>
+			<Footer />
+
 		</div>
 	);
 };

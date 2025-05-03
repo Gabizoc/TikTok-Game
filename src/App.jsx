@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 import Sidebar from "./components/dashboard/common/Sidebar";
 
@@ -8,9 +8,12 @@ import LicencePage from "./pages/dashboard/LicencePage";
 import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
 import GamePage from "./pages/dashboard/GamePage";
+import PartPage from "./pages/dashboard/2PartPage";
 import "./i18n";
 
 function App() {
+	const location = useLocation();
+	const hideSidebar = location.pathname === "/dashboard/game/1";
 	return (
 		<div className='flex h-screen bg-gray-900 text-gray-100 overflow-hidden'>
 			{/* BG */}
@@ -19,14 +22,16 @@ function App() {
 				<div className='absolute inset-0 backdrop-blur-sm' />
 			</div>
 
-			<Sidebar />
+			{!hideSidebar && <Sidebar />}
 			<Routes>
-				<Route path='/' element={<OverviewPage />} />
-				<Route path='/gifts' element={<ProductsPage />} />
-				<Route path='/license' element={<LicencePage />} />
-				<Route path='/analytics' element={<AnalyticsPage />} />
-				<Route path='/settings' element={<SettingsPage />} />
-				<Route path='/game' element={<GamePage />} />
+				<Route path='/dashboard' element={<OverviewPage />} />
+				<Route path='/dashboard/gifts' element={<ProductsPage />} />
+				<Route path='/dashboard/license' element={<LicencePage />} />
+				<Route path='/dashboard/analytics' element={<AnalyticsPage />} />
+				<Route path='/dashboard/settings' element={<SettingsPage />} />
+				<Route path='/dashboard/game' element={<GamePage />} />
+				<Route path='/dashboard/logout' element={<div>Logout</div>} />
+				<Route path='/dashboard/game/1' element={<PartPage />} />
 			</Routes>
 		</div>
 	);

@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
-import Header from "../../components/dashboard/common/Header";
-import StatCard from "../../components/dashboard/common/StatCard";
 import { useTranslation } from "react-i18next";
+
+import Header from "../../components/dashboard/common/Header";
+import Footer from "../../components/dashboard/common/Footer";
+import StatCard from "../../components/dashboard/common/StatCard";
 
 import { AlertTriangle, ArrowUpNarrowWide, Package, Coins } from "lucide-react";
 import GiftRepartitionChart from "../../components/dashboard/gifts/GiftRepartitionChart";
@@ -35,6 +37,8 @@ const ProductsPage = () => {
 				<ProductsTable />
 
 			</main>
+			<Footer />
+
 		</div>
 	);
 };

@@ -66,19 +66,14 @@ router.post("/start-live-connection", authMiddleware, async (req, res) => {
                 sessionId: streamSession._id
             });
             
-            // Configuration des écouteurs d'événements
             
-            // Écouteur pour les cadeaux
             tiktokLiveConnection.on('gift', async (data) => {
                 console.log(`Received gift: ${data.giftName} from ${data.nickname}`);
                 
-                // Mettre à jour la session de streaming
                 const session = await StreamSession.findById(streamSession._id);
                 
-                // Calculer la valeur du cadeau
                 const giftValue = data.diamondCount * data.repeatCount;
                 
-                // Ajouter le cadeau à l'historique de la session
                 session.gifts.push({
                     giftId: data.giftId,
                     giftName: data.giftName,
@@ -93,7 +88,6 @@ router.post("/start-live-connection", authMiddleware, async (req, res) => {
                 session.totalDiamonds += giftValue;
                 await session.save();
                 
-                // Mettre à jour l'utilisateur
                 user.coins += giftValue * 0.01;
                 user.totalGiftsReceived += 1;
                 user.lastActive = new Date();
@@ -108,12 +102,10 @@ router.post("/start-live-connection", authMiddleware, async (req, res) => {
                 await user.save();
             });
             
-            // Écouteur pour le nombre de spectateurs
             tiktokLiveConnection.on('roomUser', async (data) => {
                 const session = await StreamSession.findById(streamSession._id);
                 session.currentViewers = data.viewerCount;
                 
-                // Mettre à jour le pic de spectateurs si nécessaire
                 if (data.viewerCount > session.viewerPeak) {
                     session.viewerPeak = data.viewerCount;
                 }
@@ -121,7 +113,6 @@ router.post("/start-live-connection", authMiddleware, async (req, res) => {
                 await session.save();
             });
             
-            // Écouteur pour la déconnexion
             tiktokLiveConnection.on('streamEnd', async () => {
                 console.log(`Stream ended for ${tiktokUsername}`);
                 await endLiveSession(tiktokUsername);
@@ -153,7 +144,6 @@ router.post("/start-live-connection", authMiddleware, async (req, res) => {
     }
 });
 
-// Arrêter une connexion TikTok Live
 router.post("/stop-live-connection", authMiddleware, async (req, res) => {
     const { tiktokUsername } = req.body;
     
@@ -189,7 +179,6 @@ router.post("/stop-live-connection", authMiddleware, async (req, res) => {
     }
 });
 
-// Fonction pour terminer une session de streaming
 async function endLiveSession(tiktokUsername) {
     if (!activeConnections.has(tiktokUsername)) {
         return {
@@ -200,16 +189,13 @@ async function endLiveSession(tiktokUsername) {
     
     const { connection, sessionId } = activeConnections.get(tiktokUsername);
     
-    // Déconnecter de TikTok Live
     connection.disconnect();
     
-    // Terminer la session
     const session = await StreamSession.findById(sessionId);
     session.endTime = new Date();
     session.active = false;
     await session.save();
     
-    // Supprimer de la map des connexions actives
     activeConnections.delete(tiktokUsername);
     
     return {
@@ -225,7 +211,6 @@ async function endLiveSession(tiktokUsername) {
     };
 }
 
-// Obtenir les stats d'une session de streaming
 router.get("/live-session/:sessionId", authMiddleware, async (req, res) => {
     const { sessionId } = req.params;
     
@@ -239,7 +224,6 @@ router.get("/live-session/:sessionId", authMiddleware, async (req, res) => {
             });
         }
         
-        // Calculer des statistiques supplémentaires
         const duration = session.endTime 
             ? (session.endTime - session.startTime) / 1000 / 60 
             : (new Date() - session.startTime) / 1000 / 60;
@@ -271,7 +255,6 @@ router.get("/live-session/:sessionId", authMiddleware, async (req, res) => {
     }
 });
 
-// Obtenir toutes les sessions de streaming d'un utilisateur
 router.get("/user-sessions/:tiktokUsername", authMiddleware, async (req, res) => {
     const { tiktokUsername } = req.params;
     
@@ -306,7 +289,6 @@ router.get("/user-sessions/:tiktokUsername", authMiddleware, async (req, res) =>
     }
 });
 
-// Obtenir les détails d'un utilisateur
 router.get("/user/:tiktokUsername", authMiddleware, async (req, res) => {
     const { tiktokUsername } = req.params;
     
@@ -340,7 +322,6 @@ router.get("/user/:tiktokUsername", authMiddleware, async (req, res) => {
     }
 });
 
-// Récupérer une liste des connexions actives
 router.get("/active-connections", authMiddleware, async (req, res) => {
     try {
         const connections = Array.from(activeConnections.keys()).map(username => ({

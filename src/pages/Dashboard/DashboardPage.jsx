@@ -2,14 +2,16 @@ import { Tv, Users, Euro } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
+import Footer from "../../components/dashboard/common/Footer";
 import Header from "../../components/dashboard/common/Header";
+
 import StatCard from "../../components/dashboard/common/StatCard";
 import GainChart from "../../components/dashboard/dashboard/GainChart";
 import GiftRepartitionChart from "../../components/dashboard/gifts/GiftRepartitionChart";
 import ViewerChart from "../../components/dashboard/dashboard/ViewerChart";
 import AIPoweredInsights from "../../components/dashboard/analytics/AIPoweredInsights";
 
-const OverviewPage = () => {
+const DashboardPage = () => {
 	const { t } = useTranslation();
 	return (
 		<div className='flex-1 overflow-auto relative'>
@@ -35,7 +37,9 @@ const OverviewPage = () => {
 
 				<AIPoweredInsights />
 			</main>
+			<Footer />
+
 		</div>
 	);
 };
-export default OverviewPage;
+export default DashboardPage;

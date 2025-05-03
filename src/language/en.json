@@ -1,4 +1,6 @@
 {
+    "All rights reserved": "All rights reserved.",
+
     "Dashboard": "Dashboard",
     "Total Spectateurs": "Total Viewers",
     "Total Stream": "Total Streams",
@@ -36,13 +38,22 @@
     "/mois": "/month",
     "Choose your perfect license": "Choose your perfect license",
     "Select a license that best fits your needs. Each plan offers different features and benefits.": "Select a license that best fits your needs. Each plan offers different features and benefits.",
+    "Ils ont testé": "They tested",
+    "Créateur de contenu": "Content Creator",
+    "Développeuse full-stack": "Full-stack Developer",
+    "Fondateur de startup": "Startup Founder",
+    "J'utilise FUTUR NOM depuis plusieurs mois. Super simple pour gérer mes jeux en live, et un support au top.": "I have been using FUTUR NOM for several months. Super easy to manage my live games, and top-notch support.",
+    "Disponibilité incroyable et panel fluide pour gérer mes jeux TikTok. Idéal pour mes projets dev.": "Amazing uptime and smooth control panel for managing my TikTok games. Perfect for my dev projects.",
+    "Abordable et fiable. Un service parfait pour faire grandir nos jeux interactifs en live.": "Affordable and reliable. A perfect service to grow our interactive live games.",
+    "Lire plus": "Read more",
 
     "launches": "launches",
     "Launch": "Launch",
     "List of Games": "List of Games",
-    "Take your chance... or not!": "Take your chance... or not!",
+    "Wichh part is the right one?": "Wichh part is the right one?",
     "Defuse the bomb before it's too late!": "Defuse the bomb before it's too late!",
     "Spin the wheel and make your fortune.": "Spin the wheel and make your fortune.",
+    "Test your memory with fun challenges.": "Test your memory with fun challenges.",
 
     "Settings": "Settings",
 	"Profile": "Profile",

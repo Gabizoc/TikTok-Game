@@ -23,7 +23,8 @@
     "react-router-dom": "^6.25.1",
     "react-world-flags": "^1.6.0",
     "recharts": "^2.12.7",
-    "tiktok-live-connector": "^1.2.3"
+    "tiktok-live-connector": "^1.2.3",
+    "update": "^0.7.4"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

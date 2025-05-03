@@ -1,4 +1,6 @@
 {
+    "All rights reserved": "Tous droits réservés.",
+
     "Dashboard": "Tableau de bord",
     "Total Spectateurs": "Total des Spectateurs",
     "Total Stream": "Total des Streams",
@@ -36,13 +38,22 @@
     "/mois": "/mois",
     "Choose your perfect license": "Choisissez votre licence",
     "Select a license that best fits your needs. Each plan offers different features and benefits.": "Sélectionnez la licence qui correspond le mieux à vos besoins.",
+    "Ils ont testé": "Ils ont testé",
+    "Créateur de contenu": "Créateur de contenu",
+    "Développeuse full-stack": "Développeuse full-stack",
+    "Fondateur de startup": "Fondateur de startup",
+    "J'utilise FUTUR NOM depuis plusieurs mois. Super simple pour gérer mes jeux en live, et un support au top.": "J'utilise FUTUR NOM depuis plusieurs mois. Super simple pour gérer mes jeux en live, et un support au top.",
+    "Disponibilité incroyable et panel fluide pour gérer mes jeux TikTok. Idéal pour mes projets dev.": "Disponibilité incroyable et panel fluide pour gérer mes jeux TikTok. Idéal pour mes projets dev.",
+    "Abordable et fiable. Un service parfait pour faire grandir nos jeux interactifs en live.": "Abordable et fiable. Un service parfait pour faire grandir nos jeux interactifs en live.",
+    "Lire plus": "Lire plus",
 
     "launches": "lancements",
     "Launch": "Lancer",
     "List of Games": "Liste des Jeux",
-    "Take your chance... or not!": "Prenez votre chance... ou pas !",
+    "Wichh part is the right one?": "Quelle partie est la bonne ?",
     "Defuse the bomb before it's too late!": "Désamorcez la bombe avant qu'il ne soit trop tard !",
     "Spin the wheel and make your fortune.": "Faites tourner la roue et faites votre fortune.",
+    "Test your memory with fun challenges.": "Testez votre mémoire avec des défis amusants.",
 
     "Settings": "Paramètres",
 	"Profile": "Profil",
