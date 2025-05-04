@@ -1,8 +1,21 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import {  ArrowLeftToLine,  Settings,  Timer,  ChevronsLeft, Gift, Plus, Check, Play, Octagon, Maximize, Minimize } from "lucide-react";
+import {
+  ArrowLeftToLine,
+  Settings,
+  Timer,
+  ChevronsLeft,
+  Gift,
+  Plus,
+  Check,
+  Play,
+  Octagon,
+  Maximize,
+  Minimize,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 // API URL as a constant to avoid repeating
 const API_BASE_URL = "http://localhost:3010";
@@ -10,42 +23,43 @@ const WS_URL = "ws://localhost:3010";
 
 const MobileBattle = () => {
   const navigate = useNavigate();
-  
+  const { t } = useTranslation();
+
   // Game states
   const [initialTime, setInitialTime] = useState(60);
   const [time, setTime] = useState(initialTime);
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [winner, setWinner] = useState(null);
-  
+
   // Loading state
   const [isLoading, setIsLoading] = useState(true);
   const [isDataReady, setIsDataReady] = useState(false);
-  
+
   // Game data
   const [checkedGifts, setCheckedGifts] = useState({});
   const [gifts, setGifts] = useState([]);
   const [filteredGifts, setFilteredGifts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Camp configurations
   const [blueCampConfig, setBlueCampConfig] = useState({
     name: "Canoe",
     images: [],
-    selectedGifts: []
+    selectedGifts: [],
   });
-  
+
   const [redCampConfig, setRedCampConfig] = useState({
     name: "Kayak",
     images: [],
-    selectedGifts: []
+    selectedGifts: [],
   });
-  
+
   // Game statistics
-  const [blueCampPercent, setBlueCampPercent] = useState(50);
-  const [redCampPercent, setRedCampPercent] = useState(50);
+  const [blueCampPercent, setBlueCampPercent] = useState(43);
+  const [redCampPercent, setRedCampPercent] = useState(57);
   const [blueIndex, setBlueIndex] = useState(0);
   const [redIndex, setRedIndex] = useState(0);
-  
+
   // Refs
   const socketRef = useRef(null);
   const timerRef = useRef(null);
@@ -71,16 +85,16 @@ const MobileBattle = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchGifts();
   }, []);
 
   // Handle search filtering
   useEffect(() => {
-    if (searchQuery.trim() === '') {
+    if (searchQuery.trim() === "") {
       setFilteredGifts(gifts);
     } else {
-      const filtered = gifts.filter(gift =>
+      const filtered = gifts.filter((gift) =>
         gift.nom?.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredGifts(filtered);
@@ -90,25 +104,25 @@ const MobileBattle = () => {
   // Calculate and update camp images based on selected gifts
   useEffect(() => {
     if (!gifts.length) return;
-    
+
     // Get selected gifts for each camp
     const blueSelectedGifts = Object.entries(checkedGifts)
       .filter(([_, value]) => value.blue)
       .map(([id]) => id);
-    
+
     const redSelectedGifts = Object.entries(checkedGifts)
       .filter(([_, value]) => value.red)
       .map(([id]) => id);
-    
+
     // Get gift images for each camp
     const getGiftImages = (selectedIds) => {
       const images = selectedIds
-        .map(id => {
-          const gift = gifts.find(g => g.id === id);
+        .map((id) => {
+          const gift = gifts.find((g) => g.id === id);
           return gift?.imageUrl;
         })
         .filter(Boolean);
-      
+
       // Repeat images if needed for animation
       if (images.length > 0) {
         const repeatedImages = [...images];
@@ -117,41 +131,43 @@ const MobileBattle = () => {
         }
         return repeatedImages;
       }
-      
+
       return [];
     };
-    
+
     const blueImages = getGiftImages(blueSelectedGifts);
     const redImages = getGiftImages(redSelectedGifts);
-    
+
     // Update camp configurations
-    setBlueCampConfig(prev => ({
+    setBlueCampConfig((prev) => ({
       ...prev,
       images: blueImages,
-      selectedGifts: blueSelectedGifts
+      selectedGifts: blueSelectedGifts,
     }));
-    
-    setRedCampConfig(prev => ({
+
+    setRedCampConfig((prev) => ({
       ...prev,
       images: redImages,
-      selectedGifts: redSelectedGifts
+      selectedGifts: redSelectedGifts,
     }));
-    
   }, [checkedGifts, gifts]);
 
   // Auto slide camp images
   useEffect(() => {
-    if (blueCampConfig.images.length === 0 && redCampConfig.images.length === 0) {
+    if (
+      blueCampConfig.images.length === 0 &&
+      redCampConfig.images.length === 0
+    ) {
       return;
     }
-    
+
     const autoSlide = setInterval(() => {
       setBlueIndex((prevIndex) =>
-        (prevIndex + 9) >= blueCampConfig.images.length ? 0 : prevIndex + 9
+        prevIndex + 9 >= blueCampConfig.images.length ? 0 : prevIndex + 9
       );
-      
+
       setRedIndex((prevIndex) =>
-        (prevIndex + 9) >= redCampConfig.images.length ? 0 : prevIndex + 9
+        prevIndex + 9 >= redCampConfig.images.length ? 0 : prevIndex + 9
       );
     }, 3000);
 
@@ -163,19 +179,20 @@ const MobileBattle = () => {
     if (isGameRunning) {
       const start = Date.now();
       const duration = time * 1000; // time en secondes -> ms
-  
+
       timerRef.current = setInterval(() => {
         const elapsed = Date.now() - start;
         const remaining = Math.max(0, Math.round((duration - elapsed) / 1000));
-  
+
         setTime(remaining);
-  
+
         if (remaining === 0) {
           // Déterminer le gagnant
           if (blueCampPercent > redCampPercent) setWinner(blueCampConfig.name);
-          else if (redCampPercent > blueCampPercent) setWinner(redCampConfig.name);
-          else setWinner('Égalité');          
-  
+          else if (redCampPercent > blueCampPercent)
+            setWinner(redCampConfig.name);
+          else setWinner("Égalité");
+
           // Clean-up
           if (socketRef.current) socketRef.current.close();
           setIsGameRunning(false);
@@ -183,98 +200,104 @@ const MobileBattle = () => {
         }
       }, 200); // tick plus fréquent pour meilleure précision
     }
-  
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isGameRunning, blueCampPercent, redCampPercent]);  
+  }, [isGameRunning, blueCampPercent, redCampPercent]);
 
   // WebSocket connection management
   useEffect(() => {
-      if (isGameRunning && (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED)) {
-          // Initialize WebSocket connection
-          socketRef.current = new WebSocket(WS_URL);
-          
-          // Reset points
-          bluePointsRef.current = 0;
-          redPointsRef.current = 0;
+    if (
+      isGameRunning &&
+      (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED)
+    ) {
+      // Initialize WebSocket connection
+      socketRef.current = new WebSocket(WS_URL);
 
-          // Send selected gift IDs to WebSocket
-          socketRef.current.onopen = () => {
-              socketRef.current.send(JSON.stringify({
-                  type: "game01",
-                  tiktokUsername: 'officialspecs',
-                  blueGifts: blueCampConfig.selectedGifts,
-                  redGifts: redCampConfig.selectedGifts
-              }));
-          };      
-          
-          // Set up WebSocket message handler
-          socketRef.current.onmessage = (event) => {
-            try {
-                const message = event.data;
-                const data = JSON.parse(message);
-        
-                if (data.type === 'error') {
-                    console.error(`Erreur WebSocket (${data.code}): ${data.message}`);
-                    alert(data.message); // ou toast, etc.
-                    setIsGameRunning(false);
-                    return;
-                }
-        
-                const regex = /(\w+) \+(\d+)/;
-                const match = message.match(regex);
-                if (match) {
-                    const team = match[1];
-                    const points = parseInt(match[2]);
-                    if (team === 'bleu') {
-                      bluePointsRef.current += points;
-                      setBluePoints(bluePointsRef.current);
-                    }
-                    else if (team === 'rouge') {
-                      redPointsRef.current += points;
-                      setRedPoints(redPointsRef.current);
-                    }                    
-                    updatePercentages();
-                }
-            } catch (err) {
-                console.error('Erreur de parsing message WebSocket :', err);
+      // Reset points
+      bluePointsRef.current = 0;
+      redPointsRef.current = 0;
+
+      // Send selected gift IDs to WebSocket
+      socketRef.current.onopen = () => {
+        socketRef.current.send(
+          JSON.stringify({
+            type: "game01",
+            tiktokUsername: "ellioxce3ds",
+            blueGifts: blueCampConfig.selectedGifts,
+            redGifts: redCampConfig.selectedGifts,
+          })
+        );
+      };
+
+      // Set up WebSocket message handler
+      socketRef.current.onmessage = (event) => {
+        try {
+          const message = event.data;
+          const data = JSON.parse(message);
+
+          if (data.type === "error") {
+            console.error(`Erreur WebSocket (${data.code}): ${data.message}`);
+            alert(data.message);
+            setIsGameRunning(false);
+            return;
+          }
+
+          if (data.type === "points") {
+            const { team, points } = data;
+
+            if (team === "bleu") {
+              bluePointsRef.current += points;
+              setBluePoints(bluePointsRef.current);
+            } else if (team === "rouge") {
+              redPointsRef.current += points;
+              setRedPoints(redPointsRef.current);
             }
-        };
-        
-          
-          // Handle WebSocket errors
-          socketRef.current.onerror = (error) => {
-              console.error('WebSocket error:', error);
-              setIsGameRunning(false);
-          };
-      }
-      
-      // Cleanup: close WebSocket when game stops or component unmounts
-       return () => {
-        if (socketRef.current) {
-          console.log("Closing WebSocket connection");
-          socketRef.current.close();
-          socketRef.current = null; // Réinitialiser la référence pour éviter les doubles connexions
+
+            updatePercentages();
+          }
+        } catch (err) {
+          console.error("Erreur de parsing message WebSocket :", err);
         }
       };
-    }, [isGameRunning, blueCampConfig.selectedGifts, redCampConfig.selectedGifts]);
+
+      // Handle WebSocket errors
+      socketRef.current.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        setIsGameRunning(false);
+      };
+    }
+
+    // Cleanup: close WebSocket when game stops or component unmounts
+    return () => {
+      if (socketRef.current) {
+        console.log("Closing WebSocket connection");
+        socketRef.current.close();
+        socketRef.current = null; // Réinitialiser la référence pour éviter les doubles connexions
+      }
+    };
+  }, [
+    isGameRunning,
+    blueCampConfig.selectedGifts,
+    redCampConfig.selectedGifts,
+  ]);
 
   // Utility function to calculate gauge percentages
   const updatePercentages = useCallback(() => {
     const bluePoints = bluePointsRef.current;
     const redPoints = redPointsRef.current;
     const totalPoints = bluePoints + redPoints;
-    
+
     if (totalPoints === 0) {
       setBlueCampPercent(50);
       setRedCampPercent(50);
       return;
     }
-    
+
     const bluePercent = (bluePoints / totalPoints) * 100;
     const redPercent = 100 - bluePercent;
-    
+
     setBlueCampPercent(bluePercent);
     setRedCampPercent(redPercent);
   }, []);
@@ -283,26 +306,26 @@ const MobileBattle = () => {
   const handleGiftCheckboxChange = useCallback((giftId, checkboxType) => {
     setCheckedGifts((prevCheckedGifts) => {
       const newCheckedGifts = { ...prevCheckedGifts };
-  
+
       // Initialize gift selection state if needed
       if (!newCheckedGifts[giftId]) {
         newCheckedGifts[giftId] = { blue: false, red: false };
       }
-  
-      if (checkboxType === 'blue') {
+
+      if (checkboxType === "blue") {
         const isBlueChecked = !newCheckedGifts[giftId].blue;
         newCheckedGifts[giftId] = {
           blue: isBlueChecked,
           red: isBlueChecked ? false : newCheckedGifts[giftId].red,
         };
-      } else if (checkboxType === 'red') {
+      } else if (checkboxType === "red") {
         const isRedChecked = !newCheckedGifts[giftId].red;
         newCheckedGifts[giftId] = {
           blue: isRedChecked ? false : newCheckedGifts[giftId].blue,
           red: isRedChecked,
         };
       }
-  
+
       return newCheckedGifts;
     });
   }, []);
@@ -326,7 +349,9 @@ const MobileBattle = () => {
   const formatTime = useCallback((seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remainingSeconds
+    ).padStart(2, "0")}`;
   }, []);
 
   // Search input handler
@@ -339,7 +364,7 @@ const MobileBattle = () => {
     if (images.length === 0) {
       return [[null, null, null, null, null, null, null, null, null]];
     }
-    
+
     const pages = [];
     for (let i = 0; i < images.length; i += 9) {
       const page = images.slice(i, i + 9);
@@ -358,42 +383,44 @@ const MobileBattle = () => {
     } else {
       document.exitFullscreen().then(() => setIsFullscreen(false));
     }
-  };  
-  
+  };
+
   // Memoize paginated images to prevent unnecessary recalculations
-  const bluePages = useMemo(() => 
-    paginateImages([...new Set(blueCampConfig.images)]), 
+  const bluePages = useMemo(
+    () => paginateImages([...new Set(blueCampConfig.images)]),
     [blueCampConfig.images, paginateImages]
   );
-  
-  const redPages = useMemo(() => 
-    paginateImages([...new Set(redCampConfig.images)]), 
+
+  const redPages = useMemo(
+    () => paginateImages([...new Set(redCampConfig.images)]),
     [redCampConfig.images, paginateImages]
   );
 
   // Current pages to display
-  const blueDisplayImages = useMemo(() => 
-    bluePages.length > 0 
-      ? bluePages[Math.min(Math.floor(blueIndex / 9), bluePages.length - 1)] 
-      : Array(9).fill(null),
+  const blueDisplayImages = useMemo(
+    () =>
+      bluePages.length > 0
+        ? bluePages[Math.min(Math.floor(blueIndex / 9), bluePages.length - 1)]
+        : Array(9).fill(null),
     [bluePages, blueIndex]
   );
-  
-  const redDisplayImages = useMemo(() => 
-    redPages.length > 0 
-      ? redPages[Math.min(Math.floor(redIndex / 9), redPages.length - 1)] 
-      : Array(9).fill(null),
+
+  const redDisplayImages = useMemo(
+    () =>
+      redPages.length > 0
+        ? redPages[Math.min(Math.floor(redIndex / 9), redPages.length - 1)]
+        : Array(9).fill(null),
     [redPages, redIndex]
   );
 
   // Count selected gifts for each camp
-  const blueSelectedCount = useMemo(() => 
-    Object.values(checkedGifts).filter(v => v.blue).length, 
+  const blueSelectedCount = useMemo(
+    () => Object.values(checkedGifts).filter((v) => v.blue).length,
     [checkedGifts]
   );
-  
-  const redSelectedCount = useMemo(() => 
-    Object.values(checkedGifts).filter(v => v.red).length, 
+
+  const redSelectedCount = useMemo(
+    () => Object.values(checkedGifts).filter((v) => v.red).length,
     [checkedGifts]
   );
 
@@ -413,16 +440,16 @@ const MobileBattle = () => {
           </div>
 
           <p className="mt-6 text-white text-xl tracking-wider font-mono uppercase">
-            Chargement...
+            {t("Loading")}...
           </p>
 
           <p className="mt-4 text-sm text-white/70 text-center">
-            Bloqué ici ?{" "}
+            {t("Stuck here")} ?{" "}
             <button
               onClick={() => window.location.reload()}
               className="underline text-pink-500 hover:text-pink-300 transition"
             >
-              Rafraîchissez la page en cliquant ici
+              {t("Click here to refresh the page")}
             </button>
           </p>
         </div>
@@ -440,17 +467,23 @@ const MobileBattle = () => {
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate("/dashboard")}
           >
-            <ArrowLeftToLine /> Back
+            <ArrowLeftToLine /> {t("Back")}
           </motion.button>
 
           <motion.button
             onClick={handleStartStop}
             className={`w-1/3 flex items-center justify-center rounded-xl border px-3 py-2 text-white transition-colors hover:bg-pink-500 hover:bg-opacity-10 ${
-              isGameRunning ? "hover:text-red-700 border-red-500" : "hover:text-green-700 border-green-500"
+              isGameRunning
+                ? "hover:text-red-700 border-red-500"
+                : "hover:text-green-700 border-green-500"
             }`}
             whileTap={{ scale: 0.95 }}
           >
-            {isGameRunning ? <Octagon className="text-red-500" /> : <Play className="text-green-500" />}
+            {isGameRunning ? (
+              <Octagon className="text-red-500" />
+            ) : (
+              <Play className="text-green-500" />
+            )}
           </motion.button>
 
           <motion.button
@@ -458,18 +491,22 @@ const MobileBattle = () => {
             className="w-1/3 flex items-center justify-center rounded-xl border px-3 py-2 text-white transition hover:bg-pink-500 hover:bg-opacity-10 border-pink-500"
             whileTap={{ scale: 0.95 }}
           >
-            {isFullscreen ? <Minimize className="text-pink-400" /> : <Maximize className="text-pink-400" />}
+            {isFullscreen ? (
+              <Minimize className="text-pink-400" />
+            ) : (
+              <Maximize className="text-pink-400" />
+            )}
           </motion.button>
         </div>
 
         <h2 className="text-2xl font-bold mb-2 flex items-center">
-          <Settings className="mr-2 text-pink-500" /> Configuration
+          <Settings className="mr-2 text-pink-500" /> {t("Settings")}
         </h2>
 
         {/* Time Config */}
         <div>
           <label className="block mb-1 flex items-center">
-            <Timer className="mr-1 text-pink-500"/> Temps (secondes)
+            <Timer className="mr-1 text-pink-500" /> {t("Time (seconds)")}
           </label>
           <input
             type="number"
@@ -487,13 +524,14 @@ const MobileBattle = () => {
         {/* Blue Camp Name */}
         <div>
           <label className="block mb-1 flex items-center">
-            <ChevronsLeft className="mr-1 text-pink-500"/> Nom Camp Bleu
+            <ChevronsLeft className="mr-1 text-pink-500" />{" "}
+            {t("Name Blue Camp")}
           </label>
           <input
             className="w-full p-2 rounded bg-gray-800 border border-gray-700"
             value={blueCampConfig.name}
             onChange={(e) =>
-              setBlueCampConfig(prev => ({ ...prev, name: e.target.value }))
+              setBlueCampConfig((prev) => ({ ...prev, name: e.target.value }))
             }
             disabled={isGameRunning}
           />
@@ -502,13 +540,13 @@ const MobileBattle = () => {
         {/* Red Camp Name */}
         <div>
           <label className="block mb-1 flex items-center">
-            <ChevronsLeft className="mr-1 text-pink-500"/> Nom Camp Rouge
+            <ChevronsLeft className="mr-1 text-pink-500" /> {t("Name Red Camp")}
           </label>
           <input
             className="w-full p-2 rounded bg-gray-800 border border-gray-700"
             value={redCampConfig.name}
             onChange={(e) =>
-              setRedCampConfig(prev => ({ ...prev, name: e.target.value }))
+              setRedCampConfig((prev) => ({ ...prev, name: e.target.value }))
             }
             disabled={isGameRunning}
           />
@@ -517,19 +555,23 @@ const MobileBattle = () => {
         {/* Gift Selection Title */}
         <div className="block mb-1 flex items-center justify-between">
           <label className="lock mb-1 flex items-center">
-            <Gift className="mr-1 text-pink-500"/> Sélection des cadeaux
+            <Gift className="mr-1 text-pink-500" /> {t("Gift selection")}
           </label>
           <div className="flex items-center space-x-2 text-sm font-normal">
-            <span className="px-2 py-1 bg-blue-600 rounded-lg">{blueSelectedCount}</span>
-            <span className="px-2 py-1 bg-pink-600 rounded-lg">{redSelectedCount}</span>
+            <span className="px-2 py-1 bg-blue-600 rounded-lg">
+              {blueSelectedCount}
+            </span>
+            <span className="px-2 py-1 bg-pink-600 rounded-lg">
+              {redSelectedCount}
+            </span>
           </div>
         </div>
 
         {/* Search Bar */}
         <div>
           <input
-            type="text" 
-            placeholder="Rechercher un cadeau..."
+            type="text"
+            placeholder={t("Find a gift") + "..."}
             value={searchQuery}
             onChange={handleSearch}
             className="w-full p-2 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
@@ -538,11 +580,10 @@ const MobileBattle = () => {
 
         {/* Gift List */}
         <div className="relative h-[600px] overflow-y-auto">
-          <div className="absolute top-0 right-0 w-3 h-full bg-gray-800 rounded">
-          </div>
+          <div className="absolute top-0 right-0 w-3 h-full bg-gray-800 rounded"></div>
 
           <div className="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-gray-700">
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 min-w-[260px]">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 min-w-[258px] mb-4">
               {filteredGifts.length > 0 ? (
                 filteredGifts.map((gift) => (
                   <div
@@ -554,7 +595,9 @@ const MobileBattle = () => {
                       alt={gift.nom}
                       className="w-8 h-8 object-contain mb-2"
                     />
-                    <p className="text-sm font-semibold text-center text-white">{gift.nom}</p>
+                    <p className="text-sm font-semibold text-center text-white">
+                      {gift.nom}
+                    </p>
 
                     {/* Price */}
                     <div className="flex items-center text-yellow-400 mt-1 text-sm">
@@ -570,36 +613,50 @@ const MobileBattle = () => {
                     <div className="flex gap-3 mt-3">
                       {/* Blue Camp */}
                       <button
-                        onClick={() => handleGiftCheckboxChange(gift.id, 'blue')}
+                        onClick={() =>
+                          handleGiftCheckboxChange(gift.id, "blue")
+                        }
                         className={`w-8 h-8 flex items-center justify-center rounded-full border transition-colors ${
                           checkedGifts[gift.id]?.blue
-                            ? 'bg-blue-600 text-white border-blue-600'
-                            : 'text-blue-400 border-blue-600 hover:bg-blue-800'
+                            ? "bg-blue-600 text-white border-blue-600"
+                            : "text-blue-400 border-blue-600 hover:bg-blue-800"
                         }`}
                         disabled={isGameRunning}
                       >
-                        {checkedGifts[gift.id]?.blue ? <Check size={18} /> : <Plus size={18} />}
+                        {checkedGifts[gift.id]?.blue ? (
+                          <Check size={18} />
+                        ) : (
+                          <Plus size={18} />
+                        )}
                       </button>
 
                       {/* Red Camp */}
                       <button
-                        onClick={() => handleGiftCheckboxChange(gift.id, 'red')}
+                        onClick={() => handleGiftCheckboxChange(gift.id, "red")}
                         className={`w-8 h-8 flex items-center justify-center rounded-full border transition-colors ${
                           checkedGifts[gift.id]?.red
-                            ? 'bg-pink-600 text-white border-pink-600'
-                            : 'text-pink-400 border-pink-600 hover:bg-pink-800'
+                            ? "bg-pink-600 text-white border-pink-600"
+                            : "text-pink-400 border-pink-600 hover:bg-pink-800"
                         }`}
                         disabled={isGameRunning}
                       >
-                        {checkedGifts[gift.id]?.red ? <Check size={18} /> : <Plus size={18} />}
+                        {checkedGifts[gift.id]?.red ? (
+                          <Check size={18} />
+                        ) : (
+                          <Plus size={18} />
+                        )}
                       </button>
                     </div>
                   </div>
                 ))
-              ) : searchQuery.trim() !== '' ? (
-                <p className="col-span-2 text-center text-gray-400">Aucun résultat pour "{searchQuery}"</p>
+              ) : searchQuery.trim() !== "" ? (
+                <p className="col-span-2 text-center text-gray-400">
+                  {t("Aucun résultat pour")} "{searchQuery}"
+                </p>
               ) : (
-                <p className="col-span-2 text-center text-gray-400">Chargement des cadeaux...</p>
+                <p className="col-span-2 text-center text-gray-400">
+                  {t("Loading gifts")}...
+                </p>
               )}
             </div>
           </div>
@@ -612,13 +669,13 @@ const MobileBattle = () => {
         {time === 0 && winner && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 px-8 py-6 rounded-xl shadow-xl text-center z-50">
             <h1 className="text-2xl font-bold text-white flex items-center justify-center whitespace-nowrap">
-              🎉&nbsp;{winner === "Égalité" ? "Match nul !" : `${winner} a gagné !`}
+              🎉&nbsp;{winner === "Draw" ? "Draw" : `${winner} ${t("won")} !`}
             </h1>
             <button
               onClick={() => window.location.reload()}
               className="mt-4 px-4 py-2 bg-pink-500 hover:bg-pink-600 rounded-lg text-white"
             >
-              Rejouer
+              {t("Restart")}
             </button>
           </div>
         )}
@@ -627,7 +684,9 @@ const MobileBattle = () => {
         <div className="w-1/2 h-full bg-blue-600">
           <div className="w-full py-4 text-center font-bold text-xl text-white mt-5">
             {blueCampConfig.name.toUpperCase()}
-            <p className="text-lg text-blue-300 font-mono">{redPoints} points</p>
+            <p className="text-lg text-blue-300 font-mono">
+              {bluePoints} points
+            </p>
           </div>
         </div>
 
@@ -651,7 +710,7 @@ const MobileBattle = () => {
 
         {/* Point Information */}
         <div className="absolute bottom-[50%] left-1/2 transform -translate-x-1/2 text-xl font-bold text-white z-20">
-          1 pièce = 1 point
+          1 {t("coins")} = 1 point
         </div>
 
         {/* Timer */}
@@ -674,14 +733,18 @@ const MobileBattle = () => {
         <div className="absolute bottom-[10%] left-1/2 transform -translate-x-1/2 w-full flex justify-between z-10">
           {/* Blue Camp Gifts */}
           <div className="w-1/2 grid grid-cols-3 gap-1">
-            {(blueDisplayImages && blueDisplayImages.filter(image => image !== null).length > 0) ? (
+            {blueDisplayImages &&
+            blueDisplayImages.filter((image) => image !== null).length > 0 ? (
               blueDisplayImages.map((src, i) =>
                 src !== null ? (
-                    <div key={`blue-${i}-${blueIndex}`} className="flex justify-center">
-                    <img 
-                      src={src} 
-                      alt={`blue-img-${i}`} 
-                      className="w-12 h-12 object-cover rounded bg-blue-800 p-1" 
+                  <div
+                    key={`blue-${i}-${blueIndex}`}
+                    className="flex justify-center"
+                  >
+                    <img
+                      src={src}
+                      alt={`blue-img-${i}`}
+                      className="w-12 h-12 object-cover rounded bg-blue-800 p-1"
                       loading="lazy"
                     />
                   </div>
@@ -689,21 +752,25 @@ const MobileBattle = () => {
               )
             ) : (
               <div className="col-span-3 flex items-center justify-center text-center text-white text-sm p-2">
-                Sélectionnez des cadeaux pour le camp bleu
+                {t("Select gifts for the blue camp")}
               </div>
             )}
           </div>
 
           {/* Red Camp Gifts */}
           <div className="w-1/2 grid grid-cols-3 gap-1">
-            {(redDisplayImages && redDisplayImages.filter(image => image !== null).length > 0) ? (
+            {redDisplayImages &&
+            redDisplayImages.filter((image) => image !== null).length > 0 ? (
               redDisplayImages.map((src, i) =>
                 src !== null ? (
-                  <div key={`red-${i}-${redIndex}`} className="flex justify-center">
-                    <img 
-                      src={src} 
-                      alt={`red-img-${i}`} 
-                      className="w-12 h-12 object-cover rounded bg-red-800 p-1" 
+                  <div
+                    key={`red-${i}-${redIndex}`}
+                    className="flex justify-center"
+                  >
+                    <img
+                      src={src}
+                      alt={`red-img-${i}`}
+                      className="w-12 h-12 object-cover rounded bg-red-800 p-1"
                       loading="lazy"
                     />
                   </div>
@@ -711,7 +778,7 @@ const MobileBattle = () => {
               )
             ) : (
               <div className="col-span-3 flex items-center justify-center text-center text-white text-sm p-2">
-                Sélectionnez des cadeaux pour le camp rouge
+                {t("Select gifts for the red camp")}
               </div>
             )}
           </div>

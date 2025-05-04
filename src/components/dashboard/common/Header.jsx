@@ -24,7 +24,11 @@ const Header = ({ title }) => {
             className="flex items-center space-x-2 text-gray-100 hover:bg-gray-600 px-3 py-2 rounded-md transition-all duration-150 ease-in-out"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <Flag code={i18n.language === "fr" ? "FR" : "US"} alt="language flag" style={{ width: "20px", height: "auto" }} />
+            <Flag
+              code={i18n.language === "fr" ? "FR" : "US"}
+              alt="language flag"
+              style={{ width: "20px", height: "auto" }}
+            />
             <span>{i18n.language === "fr" ? "Français" : "English"}</span>
             <motion.div
               animate={{ rotate: isOpen ? 180 : 0 }}
@@ -45,14 +49,22 @@ const Header = ({ title }) => {
                 className="flex items-center w-full px-3 py-2 text-gray-300 hover:bg-gray-700 rounded-md transition-all duration-150 ease-in-out"
                 onClick={() => changeLanguage("fr")}
               >
-                <Flag code="FR" alt="French Flag" style={{ width: "20px", height: "auto" }} />
+                <Flag
+                  code="FR"
+                  alt="French Flag"
+                  style={{ width: "20px", height: "auto" }}
+                />
                 <span className="ml-2">Français</span>
               </button>
               <button
                 className="flex items-center w-full px-3 py-2 text-gray-300 hover:bg-gray-700 rounded-md transition-all duration-150 ease-in-out"
                 onClick={() => changeLanguage("en")}
               >
-                <Flag code="US" alt="English Flag" style={{ width: "20px", height: "auto" }} />
+                <Flag
+                  code="US"
+                  alt="English Flag"
+                  style={{ width: "20px", height: "auto" }}
+                />
                 <span className="ml-2">English</span>
               </button>
             </motion.div>
