@@ -22,12 +22,6 @@ const SIDEBAR_ITEMS = [
     color: "#EC4899",
     href: "/dashboard/license",
   },
-  {
-    name: "Analytics",
-    icon: TrendingUp,
-    color: "#EC4899",
-    href: "/dashboard/analytics",
-  },
   { name: "Game", icon: Gamepad2, color: "#EC4899", href: "/dashboard/game" },
   {
     name: "Settings",
@@ -39,7 +33,7 @@ const SIDEBAR_ITEMS = [
 
 const Sidebar = () => {
   const { t } = useTranslation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth > 768);
 
   return (
     <motion.div
@@ -59,13 +53,29 @@ const Sidebar = () => {
         </motion.button>
 
         <nav className="mt-8 flex-grow">
-          {SIDEBAR_ITEMS.map((item) => (
+        {SIDEBAR_ITEMS.map((item) => {
+          const isActive = location.pathname === item.href;
+
+          return (
             <Link key={item.href} to={item.href}>
-              <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors mb-2">
+              <motion.div
+                className={`relative flex items-center p-4 text-sm font-medium rounded-lg transition-colors mb-2 group select-none
+                  ${isActive ? "bg-gray-700/60 text-white" : "hover:bg-gray-700 text-gray-300"}
+                `}
+              >
+                {/* Arc décoratif à gauche */}
+                {isActive && (
+                  <motion.div
+                    layoutId="active-marker"
+                    className="absolute left-0 top-50% -translate-y-50% h-8 w-1.5 rounded-r-full bg-pink-500"
+                  />
+                )}
+
                 <item.icon
                   size={20}
                   style={{ color: item.color, minWidth: "20px" }}
                 />
+
                 <AnimatePresence>
                   {isSidebarOpen && (
                     <motion.span
@@ -75,20 +85,21 @@ const Sidebar = () => {
                       exit={{ opacity: 0, width: 0 }}
                       transition={{ duration: 0.2, delay: 0.3 }}
                     >
-                      {item.name}
+                      {t(item.name)}
                     </motion.span>
                   )}
                 </AnimatePresence>
               </motion.div>
             </Link>
-          ))}
+          );
+        })}
         </nav>
 
         <div className="mt-auto">
           <Link to="/dashboard/logout">
             <motion.div
               whileTap={{ scale: 0.98 }}
-              className="flex items-center p-4 text-sm font-medium rounded-lg text-red-500 hover:bg-red-800/50 bg-opacity-100 transition-colors"
+              className="flex items-center p-4 text-sm font-medium rounded-lg text-red-500 hover:bg-red-800/50 bg-opacity-100 transition-colors select-none"
             >
               <LogOut size={20} style={{ minWidth: "20px" }} />
               <AnimatePresence>
@@ -100,7 +111,7 @@ const Sidebar = () => {
                     exit={{ opacity: 0, width: 0 }}
                     transition={{ duration: 0.2, delay: 0.3 }}
                   >
-                    Logout
+                    {t("Logout")}
                   </motion.span>
                 )}
               </AnimatePresence>

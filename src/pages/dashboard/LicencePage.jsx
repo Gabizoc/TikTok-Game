@@ -19,6 +19,7 @@ const LicensesPage = () => {
       description: t("Basic license with essential features."),
       price: "$10",
       benefits: [t("Basic features"), t("Standard support")],
+      isCurrent: false
     },
     {
       id: 2,
@@ -31,6 +32,7 @@ const LicensesPage = () => {
         t("Frequent updates"),
       ],
       featured: true,
+      isCurrent: true
     },
     {
       id: 3,
@@ -42,6 +44,7 @@ const LicensesPage = () => {
         t("Dedicated support"),
         t("Full access to updates"),
       ],
+      isCurrent: false
     },
   ];
 
@@ -80,6 +83,7 @@ const LicensesPage = () => {
               price={license.price}
               benefits={license.benefits}
               featured={license.featured}
+              isCurrent={license.isCurrent}
               onBuy={() => handleBuy(license.name)}
             />
           ))}

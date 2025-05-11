@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeftToLine,
   Settings,
@@ -12,6 +12,10 @@ import {
   Octagon,
   Maximize,
   Minimize,
+  Info,
+  Filter, 
+  X,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -26,7 +30,7 @@ const MobileBattle = () => {
   const { t } = useTranslation();
 
   // Game states
-  const [initialTime, setInitialTime] = useState(60);
+  const [initialTime, setInitialTime] = useState(300);
   const [time, setTime] = useState(initialTime);
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [winner, setWinner] = useState(null);
@@ -40,23 +44,27 @@ const MobileBattle = () => {
   const [gifts, setGifts] = useState([]);
   const [filteredGifts, setFilteredGifts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState('default');
+  const [priceRange, setPriceRange] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
+
 
   // Camp configurations
   const [blueCampConfig, setBlueCampConfig] = useState({
-    name: "Canoe",
+    name: "Team1",
     images: [],
     selectedGifts: [],
   });
 
   const [redCampConfig, setRedCampConfig] = useState({
-    name: "Kayak",
+    name: "Team2",
     images: [],
     selectedGifts: [],
   });
 
   // Game statistics
-  const [blueCampPercent, setBlueCampPercent] = useState(43);
-  const [redCampPercent, setRedCampPercent] = useState(57);
+  const [blueCampPercent, setBlueCampPercent] = useState(50);
+  const [redCampPercent, setRedCampPercent] = useState(50);
   const [blueIndex, setBlueIndex] = useState(0);
   const [redIndex, setRedIndex] = useState(0);
 
@@ -71,11 +79,11 @@ const MobileBattle = () => {
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Fetch gifts data on component mount
   useEffect(() => {
     const fetchGifts = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/gift/giftall`);
+        console.log(response.data.length);
         setGifts(response.data);
         setFilteredGifts(response.data);
         setIsDataReady(true);
@@ -89,7 +97,6 @@ const MobileBattle = () => {
     fetchGifts();
   }, []);
 
-  // Handle search filtering
   useEffect(() => {
     if (searchQuery.trim() === "") {
       setFilteredGifts(gifts);
@@ -101,11 +108,9 @@ const MobileBattle = () => {
     }
   }, [searchQuery, gifts]);
 
-  // Calculate and update camp images based on selected gifts
   useEffect(() => {
     if (!gifts.length) return;
 
-    // Get selected gifts for each camp
     const blueSelectedGifts = Object.entries(checkedGifts)
       .filter(([_, value]) => value.blue)
       .map(([id]) => id);
@@ -114,7 +119,6 @@ const MobileBattle = () => {
       .filter(([_, value]) => value.red)
       .map(([id]) => id);
 
-    // Get gift images for each camp
     const getGiftImages = (selectedIds) => {
       const images = selectedIds
         .map((id) => {
@@ -123,7 +127,6 @@ const MobileBattle = () => {
         })
         .filter(Boolean);
 
-      // Repeat images if needed for animation
       if (images.length > 0) {
         const repeatedImages = [...images];
         while (repeatedImages.length < 20) {
@@ -138,7 +141,6 @@ const MobileBattle = () => {
     const blueImages = getGiftImages(blueSelectedGifts);
     const redImages = getGiftImages(redSelectedGifts);
 
-    // Update camp configurations
     setBlueCampConfig((prev) => ({
       ...prev,
       images: blueImages,
@@ -152,7 +154,6 @@ const MobileBattle = () => {
     }));
   }, [checkedGifts, gifts]);
 
-  // Auto slide camp images
   useEffect(() => {
     if (
       blueCampConfig.images.length === 0 &&
@@ -174,11 +175,10 @@ const MobileBattle = () => {
     return () => clearInterval(autoSlide);
   }, [blueCampConfig.images.length, redCampConfig.images.length]);
 
-  // Game timer logic
   useEffect(() => {
     if (isGameRunning) {
       const start = Date.now();
-      const duration = time * 1000; // time en secondes -> ms
+      const duration = time * 1000;
 
       timerRef.current = setInterval(() => {
         const elapsed = Date.now() - start;
@@ -187,18 +187,16 @@ const MobileBattle = () => {
         setTime(remaining);
 
         if (remaining === 0) {
-          // Déterminer le gagnant
           if (blueCampPercent > redCampPercent) setWinner(blueCampConfig.name);
           else if (redCampPercent > blueCampPercent)
             setWinner(redCampConfig.name);
           else setWinner("Égalité");
 
-          // Clean-up
           if (socketRef.current) socketRef.current.close();
           setIsGameRunning(false);
           clearInterval(timerRef.current);
         }
-      }, 200); // tick plus fréquent pour meilleure précision
+      }, 200);
     }
 
     return () => {
@@ -206,32 +204,26 @@ const MobileBattle = () => {
     };
   }, [isGameRunning, blueCampPercent, redCampPercent]);
 
-  // WebSocket connection management
   useEffect(() => {
     if (
       isGameRunning &&
       (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED)
     ) {
-      // Initialize WebSocket connection
       socketRef.current = new WebSocket(WS_URL);
 
-      // Reset points
       bluePointsRef.current = 0;
       redPointsRef.current = 0;
 
-      // Send selected gift IDs to WebSocket
       socketRef.current.onopen = () => {
         socketRef.current.send(
           JSON.stringify({
             type: "game01",
-            tiktokUsername: "ellioxce3ds",
             blueGifts: blueCampConfig.selectedGifts,
             redGifts: redCampConfig.selectedGifts,
           })
         );
       };
 
-      // Set up WebSocket message handler
       socketRef.current.onmessage = (event) => {
         try {
           const message = event.data;
@@ -262,19 +254,17 @@ const MobileBattle = () => {
         }
       };
 
-      // Handle WebSocket errors
       socketRef.current.onerror = (error) => {
         console.error("WebSocket error:", error);
         setIsGameRunning(false);
       };
     }
 
-    // Cleanup: close WebSocket when game stops or component unmounts
     return () => {
       if (socketRef.current) {
         console.log("Closing WebSocket connection");
         socketRef.current.close();
-        socketRef.current = null; // Réinitialiser la référence pour éviter les doubles connexions
+        socketRef.current = null;
       }
     };
   }, [
@@ -283,7 +273,6 @@ const MobileBattle = () => {
     redCampConfig.selectedGifts,
   ]);
 
-  // Utility function to calculate gauge percentages
   const updatePercentages = useCallback(() => {
     const bluePoints = bluePointsRef.current;
     const redPoints = redPointsRef.current;
@@ -302,12 +291,10 @@ const MobileBattle = () => {
     setRedCampPercent(redPercent);
   }, []);
 
-  // Gift checkbox handler with optimized state updates
   const handleGiftCheckboxChange = useCallback((giftId, checkboxType) => {
     setCheckedGifts((prevCheckedGifts) => {
       const newCheckedGifts = { ...prevCheckedGifts };
 
-      // Initialize gift selection state if needed
       if (!newCheckedGifts[giftId]) {
         newCheckedGifts[giftId] = { blue: false, red: false };
       }
@@ -330,10 +317,8 @@ const MobileBattle = () => {
     });
   }, []);
 
-  // Start/stop game handler
   const handleStartStop = useCallback(() => {
     if (isGameRunning) {
-      // Stop game
       if (timerRef.current) clearInterval(timerRef.current);
       if (socketRef.current) socketRef.current.close();
       setIsGameRunning(false);
@@ -345,7 +330,6 @@ const MobileBattle = () => {
     }
   }, [isGameRunning, initialTime]);
 
-  // Format time display as "MM:SS"
   const formatTime = useCallback((seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -354,12 +338,39 @@ const MobileBattle = () => {
     ).padStart(2, "0")}`;
   }, []);
 
-  // Search input handler
   const handleSearch = useCallback((e) => {
     setSearchQuery(e.target.value);
   }, []);
 
-  // Utility for creating paginated image grids
+  const filteredAndSortedGifts = useMemo(() => {
+    let filtered = filteredGifts.filter(gift => {
+      if (searchQuery && !gift.nom.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+      
+      if (priceRange === 'low' && gift.prix >= 100) return false;
+      if (priceRange === 'mid' && (gift.prix < 100 || gift.prix > 500)) return false;
+      if (priceRange === 'high' && gift.prix <= 500) return false;
+      
+      return true;
+    });
+    
+    return filtered.sort((a, b) => {
+      switch (sortOrder) {
+        case 'price-asc':
+          return a.prix - b.prix;
+        case 'price-desc':
+          return b.prix - a.prix;
+        case 'name-asc':
+          return a.nom.localeCompare(b.nom);
+        case 'name-desc':
+          return b.nom.localeCompare(a.nom);
+        default:
+          return 0;
+      }
+    });
+  }, [filteredGifts, searchQuery, sortOrder, priceRange]);
+
   const paginateImages = useCallback((images) => {
     if (images.length === 0) {
       return [[null, null, null, null, null, null, null, null, null]];
@@ -385,7 +396,6 @@ const MobileBattle = () => {
     }
   };
 
-  // Memoize paginated images to prevent unnecessary recalculations
   const bluePages = useMemo(
     () => paginateImages([...new Set(blueCampConfig.images)]),
     [blueCampConfig.images, paginateImages]
@@ -396,7 +406,6 @@ const MobileBattle = () => {
     [redCampConfig.images, paginateImages]
   );
 
-  // Current pages to display
   const blueDisplayImages = useMemo(
     () =>
       bluePages.length > 0
@@ -413,7 +422,6 @@ const MobileBattle = () => {
     [redPages, redIndex]
   );
 
-  // Count selected gifts for each camp
   const blueSelectedCount = useMemo(
     () => Object.values(checkedGifts).filter((v) => v.blue).length,
     [checkedGifts]
@@ -424,7 +432,6 @@ const MobileBattle = () => {
     [checkedGifts]
   );
 
-  // Show loading screen until all data is ready
   if (isLoading || !isDataReady) {
     return (
       <div className="w-screen h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] flex items-center justify-center relative overflow-hidden">
@@ -459,13 +466,12 @@ const MobileBattle = () => {
 
   return (
     <div className="w-screen h-screen flex items-center justify-center overflow-hidden text-white bg-gradient-to-r from-blue-500 via-blue-600 via-red-600 to-red-500">
-      {/* Configuration Panel */}
       <div className="bg-gray-800 bg-opacity-70 backdrop-blur-md overflow-visible shadow-lg rounded-xl border border-gray-700 md:flex flex-col gap-4 p-4 mr-20 w-[300px] h-full">
         <div className="flex items-center justify-between gap-4">
           <motion.button
             className="w-1/3 flex items-center justify-center gap-2 text-pink-400 border border-pink-500 rounded-xl px-3 py-2 transition hover:bg-pink-500 hover:bg-opacity-10 hover:text-pink-500"
             whileTap={{ scale: 0.98 }}
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/dashboard/game")}
           >
             <ArrowLeftToLine /> {t("Back")}
           </motion.button>
@@ -499,11 +505,22 @@ const MobileBattle = () => {
           </motion.button>
         </div>
 
-        <h2 className="text-2xl font-bold mb-2 flex items-center">
-          <Settings className="mr-2 text-pink-500" /> {t("Settings")}
-        </h2>
+        <h2 className="text-2xl font-bold mb-2 flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <Settings className="text-pink-500" />
+            {t("Settings")}
+          </span>
 
-        {/* Time Config */}
+          <a
+            href="/forum"
+            className="relative group text-blue-500 hover:text-blue-600 transition"
+          >
+            <Info className="w-5 h-5" />
+            <span className="absolute bottom-full right-1/2 translate-x-1/2 mb-2 w-max bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition pointer-events-none z-10">
+              {t("Need help")} ?
+            </span>
+          </a>
+        </h2>
         <div>
           <label className="block mb-1 flex items-center">
             <Timer className="mr-1 text-pink-500" /> {t("Time (seconds)")}
@@ -521,7 +538,6 @@ const MobileBattle = () => {
           />
         </div>
 
-        {/* Blue Camp Name */}
         <div>
           <label className="block mb-1 flex items-center">
             <ChevronsLeft className="mr-1 text-pink-500" />{" "}
@@ -537,7 +553,6 @@ const MobileBattle = () => {
           />
         </div>
 
-        {/* Red Camp Name */}
         <div>
           <label className="block mb-1 flex items-center">
             <ChevronsLeft className="mr-1 text-pink-500" /> {t("Name Red Camp")}
@@ -552,7 +567,6 @@ const MobileBattle = () => {
           />
         </div>
 
-        {/* Gift Selection Title */}
         <div className="block mb-1 flex items-center justify-between">
           <label className="lock mb-1 flex items-center">
             <Gift className="mr-1 text-pink-500" /> {t("Gift selection")}
@@ -567,25 +581,94 @@ const MobileBattle = () => {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div>
-          <input
-            type="text"
-            placeholder={t("Find a gift") + "..."}
-            value={searchQuery}
-            onChange={handleSearch}
-            className="w-full p-2 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
-          />
-        </div>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4 w-full">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder={t("Find a gift") + "..."}
+                value={searchQuery}
+                onChange={handleSearch}
+                className="w-full py-2 pl-10 pr-10 rounded-2xl bg-gray-800 border border-gray-700 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
+              />
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-500 w-5 h-5" />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  <X size={18} />
+                </button>
+              )}
+            </div>
 
-        {/* Gift List */}
-        <div className="relative h-[600px] overflow-y-auto">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-3 bg-gray-800 border border-gray-700 text-pink-500 font-medium text-sm py-2 px-4 rounded-2xl hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300"
+            >
+              <SlidersHorizontal size={18} />
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-wrap items-center gap-3">
+                  <select
+                    className="bg-gray-800 border border-gray-700 text-sm text-white rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    onChange={(e) => setSortOrder(e.target.value)}
+                    value={sortOrder}
+                  >
+                    <option value="default">{t("Default order")}</option>
+                    <option value="price-asc">{t("Price: Low to High")}</option>
+                    <option value="price-desc">{t("Price: High to Low")}</option>
+                    <option value="name-asc">{t("Name: A-Z")}</option>
+                    <option value="name-desc">{t("Name: Z-A")}</option>
+                  </select>
+
+                  <div className="flex items-center gap-2 bg-gray-800 px-3 py-2 rounded-xl border border-gray-700">
+                    {[
+                      { label: "∅", value: "all" },
+                      { label: "< 100", value: "low" },
+                      { label: "100-500", value: "mid" },
+                      { label: "> 500", value: "high" },
+                    ].map(({ label, value }) => (
+                      <button
+                        key={value}
+                        className={`text-xs font-medium px-3 py-1 rounded-xl transition ${
+                          priceRange === value
+                            ? "bg-pink-600 text-white"
+                            : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                        }`}
+                        onClick={() => setPriceRange(value)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        <div className="relative h-[540px] overflow-y-auto">
           <div className="absolute top-0 right-0 w-3 h-full bg-gray-800 rounded"></div>
 
           <div className="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-gray-700">
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 min-w-[258px] mb-4">
-              {filteredGifts.length > 0 ? (
-                filteredGifts.map((gift) => (
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 min-w-[258px] min-h-[258px] mb-10">
+              {isLoading ? (
+                <div className="col-span-2 flex justify-center items-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-pink-500"></div>
+                </div>
+              ) : filteredAndSortedGifts.length > 0 ? (
+                filteredAndSortedGifts.map((gift) => (
                   <div
                     key={gift.imageUrl}
                     className="bg-gray-900 rounded-xl p-4 flex flex-col items-center justify-between shadow-md"
@@ -599,19 +682,16 @@ const MobileBattle = () => {
                       {gift.nom}
                     </p>
 
-                    {/* Price */}
                     <div className="flex items-center text-yellow-400 mt-1 text-sm">
                       {gift.prix}
                       <img
                         src="https://cdn3d.iconscout.com/3d/free/thumb/free-tiktok-coin-7455382-6220601.png"
                         alt="Coin"
-                        className="w-4 h-4 mr-1"
+                        className="w-4 h-4 ml-1"
                       />
                     </div>
 
-                    {/* Selection Buttons */}
                     <div className="flex gap-3 mt-3">
-                      {/* Blue Camp */}
                       <button
                         onClick={() =>
                           handleGiftCheckboxChange(gift.id, "blue")
@@ -630,7 +710,6 @@ const MobileBattle = () => {
                         )}
                       </button>
 
-                      {/* Red Camp */}
                       <button
                         onClick={() => handleGiftCheckboxChange(gift.id, "red")}
                         className={`w-8 h-8 flex items-center justify-center rounded-full border transition-colors ${
@@ -655,7 +734,7 @@ const MobileBattle = () => {
                 </p>
               ) : (
                 <p className="col-span-2 text-center text-gray-400">
-                  {t("Loading gifts")}...
+                  {t("No gifts match the selected filters")}
                 </p>
               )}
             </div>
@@ -663,9 +742,7 @@ const MobileBattle = () => {
         </div>
       </div>
 
-      {/* Game View */}
       <div className="aspect-[9/16] h-full max-h-screen flex flex-row relative">
-        {/* Winner Overlay */}
         {time === 0 && winner && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 px-8 py-6 rounded-xl shadow-xl text-center z-50">
             <h1 className="text-2xl font-bold text-white flex items-center justify-center whitespace-nowrap">
@@ -680,17 +757,15 @@ const MobileBattle = () => {
           </div>
         )}
 
-        {/* Blue Camp Side */}
         <div className="w-1/2 h-full bg-blue-600">
-          <div className="w-full py-4 text-center font-bold text-xl text-white mt-5">
+          <div className="w-full py-4 text-center font-bold text-3xl text-white mt-[40%]">
             {blueCampConfig.name.toUpperCase()}
-            <p className="text-lg text-blue-300 font-mono">
+            <p className="text-xl text-blue-300 font-mono">
               {bluePoints} points
             </p>
           </div>
         </div>
 
-        {/* Progress Bar */}
         <div className="absolute top-[40%] left-1/2 w-11/12 max-w-sm h-20 transform -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-300 shadow-lg flex overflow-hidden z-10">
           <motion.div
             className="bg-blue-500 text-white text-sm font-bold flex items-center justify-center"
@@ -708,12 +783,10 @@ const MobileBattle = () => {
           </motion.div>
         </div>
 
-        {/* Point Information */}
         <div className="absolute bottom-[50%] left-1/2 transform -translate-x-1/2 text-xl font-bold text-white z-20">
-          1 {t("coins")} = 1 point
+          1 {t("coin")} = 1 point
         </div>
 
-        {/* Timer */}
         <div className="absolute top-[25%] left-1/2 transform -translate-x-1/2 text-4xl font-bold z-20">
           <motion.div
             animate={{
@@ -729,66 +802,67 @@ const MobileBattle = () => {
           </motion.div>
         </div>
 
-        {/* Gift Displays */}
-        <div className="absolute bottom-[10%] left-1/2 transform -translate-x-1/2 w-full flex justify-between z-10">
-          {/* Blue Camp Gifts */}
-          <div className="w-1/2 grid grid-cols-3 gap-1">
+        <div className="absolute top-[55%] left-1/2 transform -translate-x-1/2 w-full flex justify-between z-10">
+          <div className="w-1/2">
             {blueDisplayImages &&
             blueDisplayImages.filter((image) => image !== null).length > 0 ? (
-              blueDisplayImages.map((src, i) =>
-                src !== null ? (
-                  <div
-                    key={`blue-${i}-${blueIndex}`}
-                    className="flex justify-center"
-                  >
-                    <img
-                      src={src}
-                      alt={`blue-img-${i}`}
-                      className="w-12 h-12 object-cover rounded bg-blue-800 p-1"
-                      loading="lazy"
-                    />
-                  </div>
-                ) : null
-              )
+              <div className="grid grid-cols-3 gap-1">
+                {/* Filtre d'abord les images non nulles */}
+                {blueDisplayImages
+                  .filter((src) => src !== null)
+                  .map((src, i) => (
+                    <div
+                      key={`blue-${i}-${blueIndex}`}
+                      className="flex justify-center"
+                    >
+                      <img
+                        src={src}
+                        alt={`blue-img-${i}`}
+                        className="w-12 h-12 object-cover rounded bg-blue-800 p-1"
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+              </div>
             ) : (
-              <div className="col-span-3 flex items-center justify-center text-center text-white text-sm p-2">
+              <div className="flex items-center justify-center text-center text-white text-sm p-2">
                 {t("Select gifts for the blue camp")}
               </div>
             )}
           </div>
-
-          {/* Red Camp Gifts */}
-          <div className="w-1/2 grid grid-cols-3 gap-1">
+          <div className="w-1/2">
             {redDisplayImages &&
             redDisplayImages.filter((image) => image !== null).length > 0 ? (
-              redDisplayImages.map((src, i) =>
-                src !== null ? (
-                  <div
-                    key={`red-${i}-${redIndex}`}
-                    className="flex justify-center"
-                  >
-                    <img
-                      src={src}
-                      alt={`red-img-${i}`}
-                      className="w-12 h-12 object-cover rounded bg-red-800 p-1"
-                      loading="lazy"
-                    />
-                  </div>
-                ) : null
-              )
+              <div className="grid grid-cols-3 gap-1">
+                {/* Filtre d'abord les images non nulles */}
+                {redDisplayImages
+                  .filter((src) => src !== null)
+                  .map((src, i) => (
+                    <div
+                      key={`red-${i}-${redIndex}`}
+                      className="flex justify-center"
+                    >
+                      <img
+                        src={src}
+                        alt={`red-img-${i}`}
+                        className="w-12 h-12 object-cover rounded bg-red-800 p-1"
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+              </div>
             ) : (
-              <div className="col-span-3 flex items-center justify-center text-center text-white text-sm p-2">
+              <div className="flex items-center justify-center text-center text-white text-sm p-2">
                 {t("Select gifts for the red camp")}
               </div>
             )}
           </div>
         </div>
 
-        {/* Red Camp Side */}
         <div className="w-1/2 h-full bg-red-600 flex flex-col items-center">
-          <div className="w-full py-4 text-center font-bold text-xl text-white mt-5">
+          <div className="w-full py-4 text-center font-bold text-3xl text-white mt-[40%]">
             {redCampConfig.name.toUpperCase()}
-            <p className="text-lg text-red-300 font-mono">{redPoints} points</p>
+            <p className="text-xl text-red-300 font-mono">{redPoints} points</p>
           </div>
         </div>
       </div>
