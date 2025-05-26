@@ -1,0 +1,156 @@
+{
+  "seo": {
+    "title": "Animated Live - Interactive TikTok Live Tools | Games & Analytics",
+    "description": "Boost your TikTok Live with real-time interactive games, advanced analytics, and gift tracking. Engage your audience like never before.",
+    "keywords": "TikTok Live, live streaming, interactive games, live analytics, TikTok gift tracking, audience engagement, streaming tools, live gaming, TikTok analytics, streamer tools",
+    "appName": "Animated Live",
+    "ogTitle": "🚀 Animated Live - Revolutionize Your TikTok Lives",
+    "ogDescription": "The ultimate platform to create engaging TikTok lives with interactive games and real-time analytics.",
+    "ogImageAlt": "Animated Live interface showing interactive streaming tools",
+    "twitterTitle": "Animated Live - Interactive TikTok Live Tools",
+    "twitterDescription": "Transform your TikTok lives with interactive games and powerful analytics. Engage your audience in real-time!",
+    "features": {
+      "realTime": "Real-time interactions",
+      "analytics": "Advanced TikTok Live analytics",
+      "games": "Integrated interactive games",
+      "tiktokIntegration": "Native TikTok integration"
+    }
+  },
+  "hero": {
+    "ariaLabel": "Main hero section",
+    "badge": {
+      "text": "Innovate with",
+      "brand": "Animated Live"
+    },
+    "title": {
+      "start": "Start live",
+      "highlight": "Interactive"
+    },
+    "description": "Engage your audience with live games, real-time gift tracking, and advanced TikTok Live analytics, all in one platform.",
+    "cta": {
+      "primary": {
+        "text": "Start Live",
+        "aria": "Start using Animated Live"
+      },
+      "secondary": {
+        "text": "Watch Demo",
+        "aria": "Watch Animated Live demonstration"
+      }
+    },
+    "scroll": {
+      "text": "Scroll to explore",
+      "aria": "Scroll indicator"
+    }
+  },
+  "features": {
+    "section": {
+      "aria": "Main features section"
+    },
+    "title": {
+      "main": "Revolutionary",
+      "highlight": "Features"
+    },
+    "subtitle": "Discover the powerful features that make our platform the best in its field",
+    "demo": "Interactive Demo",
+    "realTime": {
+      "title": "Real-Time Power",
+      "description": "Instantly capture gifts and audience reactions as they happen, without delay, perfect for live."
+    },
+    "analytics": {
+      "title": "Smart Live Analytics",
+      "description": "Unlock AI-powered insights from your live sessions. Track engagement, spot trends, and optimize your impact."
+    },
+    "interactive": {
+      "title": "Fully Interactive",
+      "description": "Launch your live game from a wide range of games adapted to TikTok Live. Boost engagement and make every second count."
+    }
+  },
+  "solutions": {
+    "section": {
+      "aria": "Solutions section"
+    },
+    "title": {
+      "main": "Perfect",
+      "highlight": "Live Tools"
+    },
+    "subtitle": "Boost engagement. Track. Play. All in real-time.",
+    "preview": "Interactive Preview",
+    "gameEngine": {
+      "title": "Live Game Engine",
+      "description": "Launch interactive games directly in your TikTok Live. Keep viewers hooked and boost participation effortlessly.",
+      "features": {
+        "sync": "Real-time Game Sync",
+        "rewards": "Points & Rewards System",
+        "detection": "Live Gift Detection",
+        "integration": "Full TikTok Integration"
+      }
+    },
+    "analytics": {
+      "title": "Live Analytics Dashboard",
+      "description": "Track viewer behavior, gift activity, and engagement spikes, all updated in real-time with AI-powered insights.",
+      "features": {
+        "tracking": "Live Viewers Tracking",
+        "data": "Gift & Ranking Data",
+        "detection": "AI Trend Detection",
+        "insights": "AI Insights"
+      }
+    }
+  },
+  "stats": {
+    "section": {
+      "aria": "Performance statistics section"
+    },
+    "title": {
+      "main": "Trusted by",
+      "highlight": "Streamers"
+    },
+    "users": "Active Users",
+    "availability": "Availability",
+    "responseTime": "Response Time",
+    "countries": "Countries"
+  },
+  "faq": {
+    "section": {
+      "aria": "Frequently asked questions section"
+    },
+    "title": {
+      "main": "Frequently Asked",
+      "highlight": "Questions"
+    },
+    "subtitle": "Get quick answers about our live tools and interactive experience",
+    "interactions": {
+      "question": "How do live interactions work?",
+      "answer": "Every gift, like, or comment from your viewers triggers live feedback and animations. Our system captures it all in real time to create an immersive experience."
+    },
+    "customize": {
+      "question": "Can I customize the actions triggered by gifts?",
+      "answer": "Absolutely! Assign points, sounds to any gift. You're fully in control of the audience experience."
+    },
+    "tiktok": {
+      "question": "Is the platform optimized for TikTok?",
+      "answer": "Yes, everything is built around TikTok's live infrastructure. Low latency, real-time events, and native TikTok support out of the box."
+    },
+    "support": {
+      "question": "What kind of support do I get?",
+      "answer": "We offer 24/7 Discord support, onboarding help, and full documentation. Plus, you can join our creator community to get tips and tricks!"
+    }
+  },
+  "cta": {
+    "section": {
+      "aria": "Final call-to-action section"
+    },
+    "title": {
+      "main": "Ready to",
+      "highlight": "level up?"
+    },
+    "description": "Engage your audience in real-time with powerful tools built for creators who want results now.",
+    "primary": {
+      "text": "Try it now",
+      "aria": "Start Animated Live trial"
+    },
+    "secondary": {
+      "text": "Get in touch",
+      "aria": "Contact Animated Live team"
+    }
+  }
+}

@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../utils/connectDB");
 const axios = require("axios");
 const rateLimit = require("express-rate-limit");
+const authenticate = require("../utils/authenticate");
 
 const limiterAi = rateLimit({
   windowMs: 60 * 1000,
@@ -31,8 +32,8 @@ async function log(type, message) {
   }
 }
 
-router.get("/giftsended", async (req, res) => {
-  const user_id = 1;
+router.get("/giftsended", authenticate, async (req, res) => {
+  const user_id = req.user.id;
 
   if (!user_id) {
     return res.status(400).json({ error: "Le user_id est requis" });
@@ -107,8 +108,8 @@ router.get("/giftsended", async (req, res) => {
   }
 });
 
-router.get("/dashboard", async (req, res) => {
-  const user_id = 1;
+router.get("/dashboard", authenticate, async (req, res) => {
+  const user_id = req.user.id;
 
   if (!user_id) {
     return res.status(400).json({ error: "Le user_id est requis" });
@@ -193,8 +194,8 @@ router.get("/dashboard", async (req, res) => {
   }
 });
 
-router.get("/dashboard/analysis", limiterAi, async (req, res) => {
-  const user_id = 1;
+router.get("/dashboard/analysis", limiterAi, authenticate, async (req, res) => {
+  const user_id = req.user.id;
 
   if (!user_id) {
     return res.status(400).json({ error: "Le user_id est requis" });
@@ -326,8 +327,6 @@ router.get("/dashboard/analysis", limiterAi, async (req, res) => {
 
       Réponse courte, professionnelle, directe et actionnable et sans message superflue du type "Analyse rapide par AI Power Up" ou autres. Une session est 1 partie lancée mais qui peux être en un seul live.
       `;
-
-    console.log(analysisPrompt);
 
     const aiResponse = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",

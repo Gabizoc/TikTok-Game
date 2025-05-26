@@ -7,6 +7,7 @@ const { createWSS } = require("./utils/connectWS");
 const setupWSHandlers = require("./ws/wsHandlers");
 const db = require("./utils/connectDB")
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const server = http.createServer(app);
@@ -21,6 +22,8 @@ app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
 }));
+
+app.use(cookieParser());
 
 // Inject db into req
 app.use((req, res, next) => {

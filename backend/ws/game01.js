@@ -8,12 +8,32 @@ let sessionId = null;
 
 SignConfig.apiKey = process.env.TIKTOK_API_KEY;
 
-module.exports = (ws, data) => {
+module.exports = async (ws, data) => {
   ws.blueGifts = data.blueGifts || [];
   ws.redGifts = data.redGifts || [];
-  const tiktok_username = "mathlf4";
-  const user_id = 1;
-  
+  // const tiktok_username = "markk_officiel";
+  const user_id = req.user.id;
+
+  let tiktok_username;
+
+  try {
+    const [rows] = await db.query(
+      'SELECT tiktok_username FROM users WHERE id = ?',
+      [user_id]
+    );
+
+    if (rows.length === 0) {
+      console.log('❌ Aucun utilisateur trouvé avec cet ID');
+      return;
+    }
+
+    tiktok_username = rows[0].tiktok_username;
+    console.log(`[DB] Utilisateur TikTok : ${tiktok_username}`);
+  } catch (err) {
+    console.error('❌ Erreur lors de la récupération du pseudo TikTok :', err);
+    return;
+  }
+
   if (!tiktok_username || !user_id) {
     return ws.send(
       JSON.stringify({

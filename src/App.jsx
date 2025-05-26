@@ -8,6 +8,10 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 import GamePage from "./pages/dashboard/GamePage";
 import PartPage from "./pages/dashboard/2PartPage";
 import UnsupportedPage from "./pages/dashboard/UnsupportedPage";
+import LoginPage from "./pages/dashboard/LoginPage";
+import RegisterPage from "./pages/dashboard/RegisterPage";
+
+import HomePage from "./pages/showcase/HomePage";
 
 import "./i18n";
 
@@ -34,16 +38,19 @@ function App() {
         <div className="absolute inset-0 backdrop-blur-sm" />
       </div>
 
-      {showSidebar && <Sidebar />}
+      {/* {showSidebar && <Sidebar />} */}
       <Routes>
         <Route path="/dashboard" element={<OverviewPage />} />
         <Route path="/dashboard/gifts" element={<ProductsPage />} />
         <Route path="/dashboard/license" element={<LicencePage />} />
         <Route path="/dashboard/settings" element={<SettingsPage />} />
+        <Route path="/dashboard/login" element={<LoginPage />} />
+        <Route path="/dashboard/register" element={<RegisterPage />} />
         <Route path="/dashboard/game" element={<GamePage />} />
         <Route path="/dashboard/game/1" element={<PartPage />} />
-        <Route path="/dashboard/logout" element={<div>Logout</div>} />
         <Route path="/dashboard/unsupported" element={<UnsupportedPage />} />
+
+        <Route path="/" element={<HomePage />} />
       </Routes>
     </div>
   );

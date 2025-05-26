@@ -13,7 +13,7 @@ import {
   Maximize,
   Minimize,
   Info,
-  Filter, 
+  Filter,
   X,
   SlidersHorizontal,
 } from "lucide-react";
@@ -22,7 +22,6 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 
 // API URL as a constant to avoid repeating
-const API_BASE_URL = "http://localhost:3010";
 const WS_URL = "ws://localhost:3010";
 
 const MobileBattle = () => {
@@ -44,10 +43,9 @@ const MobileBattle = () => {
   const [gifts, setGifts] = useState([]);
   const [filteredGifts, setFilteredGifts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState('default');
-  const [priceRange, setPriceRange] = useState('all');
+  const [sortOrder, setSortOrder] = useState("default");
+  const [priceRange, setPriceRange] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
-
 
   // Camp configurations
   const [blueCampConfig, setBlueCampConfig] = useState({
@@ -82,7 +80,7 @@ const MobileBattle = () => {
   useEffect(() => {
     const fetchGifts = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/gift/giftall`);
+        const response = await axios.get(`/api/gift/giftall`);
         console.log(response.data.length);
         setGifts(response.data);
         setFilteredGifts(response.data);
@@ -120,15 +118,22 @@ const MobileBattle = () => {
       .map(([id]) => id);
 
     const getGiftImages = (selectedIds) => {
+      if (!Array.isArray(selectedIds) || selectedIds.length === 0) {
+        return [];
+      }
+
       const images = selectedIds
         .map((id) => {
-          const gift = gifts.find((g) => g.id === id);
-          return gift?.imageUrl;
+          const gift = gifts.find((g) => g.id === id || g.id === parseInt(id));
+          return gift?.imageUrl || null;
         })
         .filter(Boolean);
 
+      console.log("Selected IDs:", selectedIds);
+      console.log("Found images:", images);
+
       if (images.length > 0) {
-        const repeatedImages = [...images];
+        const repeatedImages = [];
         while (repeatedImages.length < 20) {
           repeatedImages.push(...images);
         }
@@ -343,27 +348,31 @@ const MobileBattle = () => {
   }, []);
 
   const filteredAndSortedGifts = useMemo(() => {
-    let filtered = filteredGifts.filter(gift => {
-      if (searchQuery && !gift.nom.toLowerCase().includes(searchQuery.toLowerCase())) {
+    let filtered = filteredGifts.filter((gift) => {
+      if (
+        searchQuery &&
+        !gift.nom.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
         return false;
       }
-      
-      if (priceRange === 'low' && gift.prix >= 100) return false;
-      if (priceRange === 'mid' && (gift.prix < 100 || gift.prix > 500)) return false;
-      if (priceRange === 'high' && gift.prix <= 500) return false;
-      
+
+      if (priceRange === "low" && gift.prix >= 100) return false;
+      if (priceRange === "mid" && (gift.prix < 100 || gift.prix > 500))
+        return false;
+      if (priceRange === "high" && gift.prix <= 500) return false;
+
       return true;
     });
-    
+
     return filtered.sort((a, b) => {
       switch (sortOrder) {
-        case 'price-asc':
+        case "price-asc":
           return a.prix - b.prix;
-        case 'price-desc':
+        case "price-desc":
           return b.prix - a.prix;
-        case 'name-asc':
+        case "name-asc":
           return a.nom.localeCompare(b.nom);
-        case 'name-desc':
+        case "name-desc":
           return b.nom.localeCompare(a.nom);
         default:
           return 0;
@@ -627,7 +636,9 @@ const MobileBattle = () => {
                   >
                     <option value="default">{t("Default order")}</option>
                     <option value="price-asc">{t("Price: Low to High")}</option>
-                    <option value="price-desc">{t("Price: High to Low")}</option>
+                    <option value="price-desc">
+                      {t("Price: High to Low")}
+                    </option>
                     <option value="name-asc">{t("Name: A-Z")}</option>
                     <option value="name-desc">{t("Name: Z-A")}</option>
                   </select>
@@ -657,7 +668,7 @@ const MobileBattle = () => {
             )}
           </AnimatePresence>
         </div>
-        
+
         <div className="relative h-[540px] overflow-y-auto">
           <div className="absolute top-0 right-0 w-3 h-full bg-gray-800 rounded"></div>
 
@@ -830,6 +841,7 @@ const MobileBattle = () => {
               </div>
             )}
           </div>
+
           <div className="w-1/2">
             {redDisplayImages &&
             redDisplayImages.filter((image) => image !== null).length > 0 ? (

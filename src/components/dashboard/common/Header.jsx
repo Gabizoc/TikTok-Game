@@ -16,7 +16,11 @@ const Header = ({ title }) => {
   return (
     <header className="relative bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg border-b border-gray-700 z-50">
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center relative z-50">
-        <h1 className="text-2xl font-semibold text-gray-100">{title}</h1>
+      <div className="flex items-center gap-3">
+      <a href="/dashboard">
+        <img src="/tiktok.png" alt="Logo" className="w-10 h-10" />
+      </a>
+      </div>
 
         {/* Sélecteur de langue avec menu déroulant */}
         <div className="relative z-50">

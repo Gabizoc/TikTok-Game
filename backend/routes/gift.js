@@ -3,6 +3,7 @@ const router = express.Router();
 const cron = require("node-cron");
 const puppeteer = require("puppeteer");
 const db = require("../utils/connectDB");
+const authenticate = require("../utils/authenticate");
 
 async function log(type, message) {
   const chalk = (await import("chalk")).default;
@@ -171,12 +172,13 @@ async function scrapeData() {
   }
 }
 
+/* scrapeData();
 cron.schedule("0 0 * * *", async () => {
   await log("info", "Cron scraping TikTok lancé...");
   scrapeData();
-});
+}); */
 
-router.get("/giftall", async (req, res) => {
+router.get("/giftall", authenticate, async (req, res) => {
   try {
     const gifts = await getAllGifts();
     res.json(gifts);

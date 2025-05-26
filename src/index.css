@@ -11,3 +11,6 @@
     animation: spin-slow 8s linear infinite;
   }
   
+  html {
+    scroll-behavior: smooth;
+  }

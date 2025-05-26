@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../utils/connectDB");
+const authenticate = require("../utils/authenticate");
 
-router.get("/games", async (req, res) => {
-  const user_id = 1;
+router.get("/games", authenticate, async (req, res) => {
+  const user_id = req.user.id;
 
   try {
     const [games] = await db.query("SELECT * FROM games");
@@ -35,9 +36,9 @@ router.get("/games", async (req, res) => {
   }
 });
 
-router.post("/favorites", async (req, res) => {
+router.post("/favorites", authenticate, async (req, res) => {
   const { game_id } = req.body;
-  const user_id = 1;
+  const user_id = req.user.id;
   if (!user_id || !game_id)
     return res.status(400).json({ error: "Données incomplètes." });
 
@@ -53,9 +54,9 @@ router.post("/favorites", async (req, res) => {
   }
 });
 
-router.delete("/favorites", async (req, res) => {
+router.delete("/favorites", authenticate, async (req, res) => {
   const { game_id } = req.body;
-  const user_id = 1;
+  const user_id = req.user.id;
   if (!user_id || !game_id)
     return res.status(400).json({ error: "Données incomplètes." });
 
